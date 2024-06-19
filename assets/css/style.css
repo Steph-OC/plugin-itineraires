@@ -1,0 +1,115 @@
+/* Front-end styles for my plugin */
+/* style.css */
+#trail-map-controls {
+    font-family: 'Roboto', sans-serif;
+}
+
+#trail-map-controls button {
+    font-family: 'Roboto', sans-serif;
+}
+
+.leaflet-bar a {
+    font-family: 'Roboto', sans-serif;
+}
+
+.user-location-icon {
+    font-family: 'Roboto', sans-serif;
+}
+
+.plugin-title {
+    color: #4D6544;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 5%;
+ 
+}
+#trail-map-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  
+}
+
+#trail-map-controls button {
+    background-color: #849452;
+    color: #FFFFFF;
+    font-family: 'Roboto', sans-serif;
+    font-size: 17px;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+#trail-map-controls button:hover {
+    background-color: #BD5606;
+}
+
+#trail-map-controls button:focus {
+    background-color: #BD5606;
+}
+
+.leaflet-control-locate {
+    background-color: #ff0000;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.leaflet-control-locate:hover {
+    background-color: #00ff00;
+}
+
+.locate-icon-red {
+    color: red !important;
+}
+
+.locate-icon-green {
+    color: green !important;
+}
+
+.fa-hiking {
+    color: #BD5606;
+    font-size: 25px;
+}
+
+.location-error-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: rgba(255, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-family: 'Roboto', sans-serif;
+}
+
+.leaflet-control-locate.locate-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background-color: white; /* Couleur par défaut */
+    border-radius: 4px;
+    color: red;
+    cursor: pointer;
+}
+
+.leaflet-control-locate.locate-icon.enabled {
+    color: green; /* Couleur lorsque l'icône est activée */
+}
+
+.leaflet-control-locate.locate-icon i {
+    font-size: 20px;
+}
+.geoloc-explanation {
+    font-size: 15px;
+    text-align: center;
+    color: #4D6544;
+}

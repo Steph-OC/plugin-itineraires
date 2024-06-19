@@ -1,0 +1,96 @@
+/* admin-style.css */
+body,
+.wrap {
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+}
+
+.wrap h1
+ {
+    font-family: 'Roboto', sans-serif;
+    font-size: 35px;
+    color: #BD5606;
+    margin-bottom: 70px;
+}
+
+.wrap h2 {
+    font-family: 'Roboto', sans-serif;
+    color: #BD5606;
+}
+
+.wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.wrap table th,
+.wrap table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.wrap table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.wrap .form-table th {
+    width: 200px;
+}
+
+.wrap .form-table td {
+    width: calc(100% - 200px);
+}
+
+.wrap .button-primary {
+    background-color: #4D6544;
+    border-color: #4D6544;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: none;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.wrap .button-primary:hover,
+.wrap .button-primary:focus {
+    background-color: #BD5606;
+    border-color: #BD5606;
+}
+
+.wrap .wp-list-table th,
+.wrap .wp-list-table td {
+    font-size: 15px;
+
+}
+
+.wrap {
+    background-color: #F5F5F5;
+    padding: 20px;
+}
+
+
+.form-table th {
+    color: #666666;
+}
+
+.form-table td {
+    background-color: #FFFFFF;
+}
+
+.supp {
+    color: red;
+    font-size: 15px;
+}
+
+.supp:hover {
+    font-size: 16px;
+}
+
+.section-plugin {
+  padding: 20px;
+}
