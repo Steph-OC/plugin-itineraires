@@ -18,6 +18,12 @@ body,
     color: #BD5606;
 }
 
+.wrap .plugin-p {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    
+}
+
 .wrap table {
     width: 100%;
     border-collapse: collapse;

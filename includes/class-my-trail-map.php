@@ -31,8 +31,10 @@ if (!class_exists('My_Trail_Map')) {
             // Enqueue Google Fonts
             wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap', false);
 
-            // Enqueue Trail Map JS
-            wp_enqueue_script('trail-map', plugin_dir_url(__FILE__) . '../js/trail-map.js', array('leaflet-js', 'leaflet-gpx-js'), null, true);
+            // Enqueue Trail Map JS only if the shortcode is present on the page
+            if (is_page() && has_shortcode(get_post()->post_content, 'trail_map')) {
+                wp_enqueue_script('trail-map', plugin_dir_url(__FILE__) . '../js/trail-map.js', array('leaflet-js', 'leaflet-gpx-js'), null, true);
+            }
 
             // Enqueue front-end CSS
             wp_enqueue_style('my-plugin-css', plugin_dir_url(__FILE__) . '../assets/css/style.css');
@@ -52,10 +54,10 @@ if (!class_exists('My_Trail_Map')) {
             wp_localize_script('trail-map', 'pluginDirUrl', array(
                 'url' => trailingslashit(plugin_dir_url(__FILE__) . '../'),
                 'mapSettings' => $map_settings,
-                'buttonColor' => $button_color, // Pass button color to script
-                'buttonTextColor' => $button_text_color, // Pass button text color to script
-                'buttonHoverColor' => $button_hover_color, // Pass button hover color to script
-                'buttonFocusColor' => $button_focus_color // Pass button focus color to script
+                'buttonColor' => $button_color,
+                'buttonTextColor' => $button_text_color,
+                'buttonHoverColor' => $button_hover_color,
+                'buttonFocusColor' => $button_focus_color
             ));
         }
 
@@ -63,37 +65,37 @@ if (!class_exists('My_Trail_Map')) {
         {
             $gpx_files = get_option('trail_map_gpx_files', array());
 
+            // Filtrer les fichiers visibles
+            $gpx_files = array_filter($gpx_files, function ($file) {
+                return isset($file['visible']) && $file['visible'];
+            });
+
             if (empty($gpx_files)) {
                 return 'No GPX files available.';
             }
 
-            $section_title = get_option('trail_map_section_title', 'Trail Map'); // Récupérer le titre de la section
-            $section_title_color = get_option('trail_map_section_title_color', '#000000'); // Récupérer la couleur du titre
+            $section_title = get_option('trail_map_section_title', 'Trail Map');
+            $section_title_color = get_option('trail_map_section_title_color', '#000000');
 
-            // URL des fichiers GPX
             $upload_dir = wp_upload_dir();
             $gpx_file_urls = array_map(function ($file) use ($upload_dir) {
-                if (is_array($file) && isset($file['name']) && isset($file['title']) && isset($file['description'])) {
-                    return [
-                        'name' => $file['title'],
-                        'url' => $upload_dir['baseurl'] . '/gpx/' . $file['name'],
-                        'description' => $file['description'],
-                        'distance' => $file['distance'],
-                        'difficulty' => $file['difficulty'],
-                        'duration' => $file['duration'],
-                        'precautions' => $file['precautions']
-                    ];
-                }
-                return null;
+                return [
+                    'name' => isset($file['title']) ? $file['title'] : '',
+                    'url' => $upload_dir['baseurl'] . '/gpx/' . (isset($file['name']) ? $file['name'] : ''),
+                    'description' => isset($file['description']) ? $file['description'] : '',
+                    'distance' => isset($file['distance']) ? $file['distance'] : '',
+                    'difficulty' => isset($file['difficulty']) ? $file['difficulty'] : '',
+                    'duration' => isset($file['duration']) ? $file['duration'] : '',
+                    'precautions' => isset($file['precautions']) ? $file['precautions'] : ''
+                ];
             }, $gpx_files);
 
-            // Filtrer les valeurs nulles résultant d'une mauvaise structure de données
             $gpx_file_urls = array_filter($gpx_file_urls);
 
             ob_start();
 ?>
             <h2 class="plugin-section-title" style="color: <?php echo esc_attr($section_title_color); ?>;"><?php echo esc_html($section_title); ?></h2>
-            <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p> <!-- Explication de la géolocalisation -->
+            <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p>
             <div id="trail-map-controls">
                 <button id="show-all">Tous les itinéraires</button>
                 <?php foreach ($gpx_file_urls as $file) : ?>
@@ -124,4 +126,3 @@ if (!class_exists('My_Trail_Map')) {
         }
     }
 }
-?>

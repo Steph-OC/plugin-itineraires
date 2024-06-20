@@ -12,7 +12,9 @@ if (!class_exists('My_Trail_Map_Admin')) {
             add_action('admin_post_edit_gpx_file', array($this, 'handle_edit_gpx_file'));
             add_action('admin_post_save_map_settings', array($this, 'save_map_settings'));
             add_action('admin_post_save_section_title', array($this, 'handle_save_section_title'));
+            add_action('admin_post_toggle_gpx_visibility', array($this, 'handle_toggle_gpx_visibility'));
             add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_styles'));
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         }
 
         public function add_admin_menu()
@@ -38,6 +40,38 @@ if (!class_exists('My_Trail_Map_Admin')) {
 
         public function create_admin_page()
         {
+            // Afficher un message de confirmation en fonction de l'action effectuée
+            if (isset($_GET['message'])) {
+                $message = '';
+                switch ($_GET['message']) {
+                    case 'updated':
+                        $message = 'Itinéraire mis à jour avec succès.';
+                        break;
+                    case 'deleted':
+                        $message = 'Fichier GPX supprimé avec succès.';
+                        break;
+                    case 'shown':
+                        $message = 'Fichier GPX affiché avec succès.';
+                        break;
+                    case 'hidden':
+                        $message = 'Fichier GPX masqué avec succès.';
+                        break;
+                    case 'uploaded':
+                        $message = 'Fichier GPX téléversé avec succès.';
+                        break;
+                    case 'map_settings_updated':
+                        $message = 'Paramètres de la carte enregistrés avec succès.';
+                        break;
+                    case 'section_title_updated':
+                        $message = 'Personnalisation enregistrée avec succès.';
+                        break;
+                }
+
+                if ($message) {
+                    echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($message) . '</p></div>';
+                }
+            }
+
             $map_settings = get_option('trail_map_settings', array(
                 'latitude' => '43.2743',
                 'longitude' => '3.16982',
@@ -52,6 +86,13 @@ if (!class_exists('My_Trail_Map_Admin')) {
 ?>
             <div class="wrap">
                 <h1 class="plugin-title">Trail Map - Gestion des itinéraires</h1>
+
+                <div class="section-plugin">
+                    <h2>Shortcode</h2>
+                    <p>Utilisez le shortcode suivant pour afficher la carte des itinéraires sur vos pages ou articles :</p>
+                    <code id="trail-map-shortcode">[trail_map]</code> <button id="copy-shortcode" class="button">Copier</button>
+                </div>
+
                 <div class="section-plugin">
                     <h2 class="plugin-h2">Fichiers enregistrés</h2>
                     <table class="wp-list-table widefat fixed striped">
@@ -71,8 +112,11 @@ if (!class_exists('My_Trail_Map_Admin')) {
                                     echo '<td>' . esc_html($file['title']) . '</td>';
                                     echo '<td>' . esc_html($file['name']) . '</td>';
                                     echo '<td>';
-                                    echo '<a href="' . esc_url(admin_url('admin.php?page=trail-map-edit&edit=' . $index)) . '" class="edit">Modifier</a> | ';
-                                    echo '<a href="' . esc_url(admin_url('admin-post.php?action=delete_gpx_file&file=' . urlencode($file['name']))) . '" class="delete">Supprimer</a>';
+                                    echo '<a href="' . esc_url(admin_url('admin-post.php?action=toggle_gpx_visibility&index=' . $index)) . '" class="button toggle-visibility">';
+                                    echo $file['visible'] ? 'Masquer' : 'Afficher';
+                                    echo '</a> ';
+                                    echo '<a href="' . esc_url(admin_url('admin.php?page=trail-map-edit&edit=' . $index)) . '" class="button">Modifier</a> ';
+                                    echo '<a href="' . esc_url(admin_url('admin-post.php?action=delete_gpx_file&file=' . urlencode($file['name']))) . '" class="button">Supprimer</a>';
                                     echo '</td>';
                                     echo '</tr>';
                                 }
@@ -83,6 +127,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
                         </tbody>
                     </table>
                 </div>
+
                 <div class="section-plugin">
                     <h2 class="plugin-h2">Nouvel itinéraire</h2>
                     <form method="post" action="<?php echo admin_url('admin-post.php?action=upload_gpx'); ?>" enctype="multipart/form-data">
@@ -188,7 +233,6 @@ if (!class_exists('My_Trail_Map_Admin')) {
                     </form>
                 </div>
 
-
                 <div class="section-plugin">
                     <h2 class="plugin-h2">Paramètres de la carte</h2>
                     <form method="post" action="<?php echo admin_url('admin-post.php?action=save_map_settings'); ?>">
@@ -220,7 +264,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
                     </form>
                 </div>
             </div>
-        <?php
+<?php
         }
 
         public function create_edit_page()
@@ -237,9 +281,8 @@ if (!class_exists('My_Trail_Map_Admin')) {
             }
 
             $file = $gpx_files[$index];
-        ?>
+?>
             <div class="wrap">
-
                 <h1 class="plugin-title">Modifier l'itinéraire GPX</h1>
                 <a href="<?php echo admin_url('admin.php?page=trail-map'); ?>" class="button back-button">Retour à la gestion des itinéraires</a>
                 <form method="post" action="<?php echo admin_url('admin-post.php?action=edit_gpx_file'); ?>">
@@ -306,16 +349,12 @@ if (!class_exists('My_Trail_Map_Admin')) {
             update_option('trail_map_button_hover_color', $button_hover_color); // Save button hover color
             update_option('trail_map_button_focus_color', $button_focus_color); // Save button focus color
 
-            wp_redirect(admin_url('admin.php?page=trail-map'));
+            wp_redirect(admin_url('admin.php?page=trail-map&message=section_title_updated'));
             exit;
         }
 
         public function handle_gpx_upload()
-        { 
-            if (!current_user_can('manage_options')) {
-            wp_die('Vous n\'avez pas la permission d\accéder à cette page.');
-        }
-
+        {
             if (!isset($_POST['upload_gpx_nonce']) || !wp_verify_nonce($_POST['upload_gpx_nonce'], 'upload_gpx')) {
                 wp_die('Nonce verification failed');
             }
@@ -346,7 +385,8 @@ if (!class_exists('My_Trail_Map_Admin')) {
                             'distance' => $uploaded_distance,
                             'difficulty' => $uploaded_difficulty,
                             'duration' => $uploaded_duration,
-                            'precautions' => $uploaded_precautions
+                            'precautions' => $uploaded_precautions,
+                            'visible' => true // par défaut, l'itinéraire est visible
                         );
                         update_option('trail_map_gpx_files', $gpx_files);
                     } else {
@@ -356,7 +396,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
                     wp_die('Upload error: ' . $uploaded_file['error']);
                 }
             }
-            wp_redirect(admin_url('admin.php?page=trail-map'));
+            wp_redirect(admin_url('admin.php?page=trail-map&message=uploaded'));
             exit;
         }
 
@@ -385,11 +425,12 @@ if (!class_exists('My_Trail_Map_Admin')) {
                 'difficulty' => sanitize_text_field($_POST['trail_map_gpx_difficulty']),
                 'duration' => sanitize_text_field($_POST['trail_map_gpx_duration']),
                 'precautions' => sanitize_textarea_field($_POST['trail_map_gpx_precautions']),
+                'visible' => $gpx_files[$index]['visible'] // conserve l'état de visibilité
             );
 
             update_option('trail_map_gpx_files', $gpx_files);
 
-            wp_redirect(admin_url('admin.php?page=trail-map'));
+            wp_redirect(admin_url('admin.php?page=trail-map&message=updated'));
             exit;
         }
 
@@ -407,7 +448,28 @@ if (!class_exists('My_Trail_Map_Admin')) {
                     unlink($upload_dir['basedir'] . '/gpx/' . $file);
                 }
             }
-            wp_redirect(admin_url('admin.php?page=trail-map'));
+            wp_redirect(admin_url('admin.php?page=trail-map&message=deleted'));
+            exit;
+        }
+
+        public function handle_toggle_gpx_visibility()
+        {
+            if (!isset($_GET['index']) || !is_numeric($_GET['index'])) {
+                wp_die('Paramètre d\'édition invalide.');
+            }
+
+            $index = intval($_GET['index']);
+            $gpx_files = get_option('trail_map_gpx_files', array());
+
+            if (!isset($gpx_files[$index])) {
+                wp_die('Fichier GPX non trouvé.');
+            }
+
+            $gpx_files[$index]['visible'] = !$gpx_files[$index]['visible'];
+            update_option('trail_map_gpx_files', $gpx_files);
+
+            $message = $gpx_files[$index]['visible'] ? 'shown' : 'hidden';
+            wp_redirect(admin_url('admin.php?page=trail-map&message=' . $message));
             exit;
         }
 
@@ -433,7 +495,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
             update_option('trail_map_section_title', $section_title);
             update_option('trail_map_section_title_color', $section_title_color);
 
-            wp_redirect(admin_url('admin.php?page=trail-map'));
+            wp_redirect(admin_url('admin.php?page=trail-map&message=map_settings_updated'));
             exit;
         }
 
@@ -441,6 +503,22 @@ if (!class_exists('My_Trail_Map_Admin')) {
         {
             wp_enqueue_style('my-plugin-admin-css', plugin_dir_url(__FILE__) . '../assets/css/admin-style.css');
             wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap', false);
+        }
+
+        public function enqueue_admin_scripts()
+        {
+            $screen = get_current_screen();
+            if ($screen->id === 'toplevel_page_trail-map') {
+                error_log('Enqueueing trail-map.js');
+                wp_enqueue_script('my-plugin-admin-js', plugin_dir_url(__FILE__) . '../js/trail-map.js', array('jquery'), null, true);
+                wp_localize_script('my-plugin-admin-js', 'pluginDirUrl', array(
+                    'buttonColor' => get_option('trail_map_button_color', '#0073aa'),
+                    'buttonTextColor' => get_option('trail_map_button_text_color', '#ffffff'),
+                    'buttonHoverColor' => get_option('trail_map_button_hover_color', '#005177'),
+                    'buttonFocusColor' => get_option('trail_map_button_focus_color', '#005177'),
+                    'sectionTitleColor' => get_option('trail_map_section_title_color', '#000000')
+                ));
+            }
         }
     }
 }

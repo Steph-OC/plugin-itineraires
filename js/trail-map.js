@@ -1,13 +1,49 @@
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('trail-map.js is loaded');
+
     const buttonColor = pluginDirUrl.buttonColor;
     const buttonTextColor = pluginDirUrl.buttonTextColor;
     const buttonHoverColor = pluginDirUrl.buttonHoverColor;
     const buttonFocusColor = pluginDirUrl.buttonFocusColor;
+    const copyButton = document.getElementById('copy-shortcode');
+    const shortcodeElement = document.getElementById('trail-map-shortcode');
+
+    if (copyButton && shortcodeElement) {
+        console.log('Copy button and shortcode element found');
+        copyButton.addEventListener('click', function () {
+            const range = document.createRange();
+            range.selectNode(shortcodeElement);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert('Shortcode copié dans le presse-papiers !');
+                } else {
+                    console.error('Erreur lors de la copie du shortcode.');
+                }
+            } catch (err) {
+                console.error('Erreur lors de la copie du shortcode : ', err);
+            }
+
+            window.getSelection().removeAllRanges();
+        });
+    } else {
+        console.log('Copy button or shortcode element not found');
+    }
 
     var sectionTitle = document.querySelector('.plugin-section-title');
     if (sectionTitle) {
         var sectionTitleColor = pluginDirUrl.sectionTitleColor;
         sectionTitle.style.color = sectionTitleColor;
+    }
+
+    // Vérifiez si l'élément map est présent avant de créer la carte
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+        console.log('Map container not found');
+        return;
     }
 
     const baseUrl = pluginDirUrl.url;
@@ -105,19 +141,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.querySelectorAll('.show-trail').forEach(function (button) {
-        button.style.backgroundColor = buttonColor; // Set button color
-        button.style.color = buttonTextColor; // Set button text color
+        button.style.backgroundColor = buttonColor;
+        button.style.color = buttonTextColor;
         button.addEventListener('mouseover', function () {
-            button.style.backgroundColor = buttonHoverColor; // Set button hover color
+            button.style.backgroundColor = buttonHoverColor;
         });
         button.addEventListener('mouseout', function () {
-            button.style.backgroundColor = buttonColor; // Reset button color
+            button.style.backgroundColor = buttonColor;
         });
         button.addEventListener('focus', function () {
-            button.style.backgroundColor = buttonFocusColor; // Set button focus color
+            button.style.backgroundColor = buttonFocusColor;
         });
         button.addEventListener('blur', function () {
-            button.style.backgroundColor = buttonColor; // Reset button color
+            button.style.backgroundColor = buttonColor;
         });
         button.addEventListener('click', function () {
             clearGpxLayers();
@@ -141,26 +177,26 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    document.querySelector('#show-all').style.backgroundColor = buttonColor; // Set button color
-    document.querySelector('#show-all').style.color = buttonTextColor; // Set button text color
+    document.querySelector('#show-all').style.backgroundColor = buttonColor;
+    document.querySelector('#show-all').style.color = buttonTextColor;
     document.querySelector('#show-all').addEventListener('mouseover', function () {
-        document.querySelector('#show-all').style.backgroundColor = buttonHoverColor; // Set button hover color
+        document.querySelector('#show-all').style.backgroundColor = buttonHoverColor;
     });
     document.querySelector('#show-all').addEventListener('mouseout', function () {
-        document.querySelector('#show-all').style.backgroundColor = buttonColor; // Reset button color
+        document.querySelector('#show-all').style.backgroundColor = buttonColor;
     });
     document.querySelector('#show-all').addEventListener('focus', function () {
-        document.querySelector('#show-all').style.backgroundColor = buttonFocusColor; // Set button focus color
+        document.querySelector('#show-all').style.backgroundColor = buttonFocusColor;
     });
     document.querySelector('#show-all').addEventListener('blur', function () {
-        document.querySelector('#show-all').style.backgroundColor = buttonColor; // Reset button color
+        document.querySelector('#show-all').style.backgroundColor = buttonColor;
     });
     document.querySelector('#show-all').addEventListener('click', function () {
         const urls = Array.from(document.querySelectorAll('.show-trail')).map(button => button.getAttribute('data-url'));
         showAllTrails(urls);
         const descriptionElement = document.getElementById('trail-description');
         if (descriptionElement) {
-            descriptionElement.innerText = ''; // Clear the description when showing all trails
+            descriptionElement.innerText = '';
         }
     });
 
@@ -200,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userMarker.setLatLng(e.latlng);
         }
 
-        map.setView(e.latlng, 16); // Ajuster le niveau de zoom ici
+        map.setView(e.latlng, 16);
     });
 
     map.on('locationerror', function (e) {
