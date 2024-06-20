@@ -72,7 +72,7 @@
     color: green !important;
 }
 
-.fa-hiking {
+.fa-street-view {
     color: #BD5606;
     font-size: 25px;
 }
@@ -112,4 +112,47 @@
     font-size: 15px;
     text-align: center;
     color: #4D6544;
+}
+.plugin-section-title {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+}
+
+.fa-street-view {
+    font-size: 30px;
+    color: #BD5606;
+}
+
+/* description front */
+.trail-description {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.trail-description h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5em;
+}
+
+.trail-description p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.trail-description p#description {
+    font-weight: bold;
+    color: #444;
+}
+
+.trail-description p#distance,
+.trail-description p#difficulty,
+.trail-description p#duration,
+.trail-description p#precautions {
+    font-style: italic;
+    color: #666;
 }

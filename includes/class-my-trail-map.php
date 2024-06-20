@@ -1,17 +1,21 @@
 <?php
 if (!class_exists('My_Trail_Map')) {
 
-    class My_Trail_Map {
+    class My_Trail_Map
+    {
 
-        public function __construct() {
+        public function __construct()
+        {
             add_shortcode('trail_map', array($this, 'render_map'));
         }
 
-        public function run() {
+        public function run()
+        {
             add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         }
 
-        public function enqueue_scripts() {
+        public function enqueue_scripts()
+        {
             // Enqueue Leaflet CSS
             wp_enqueue_style('leaflet-css', 'https://unpkg.com/leaflet/dist/leaflet.css');
 
@@ -40,13 +44,23 @@ if (!class_exists('My_Trail_Map')) {
                 'zoom' => '13'
             ));
 
+            $button_color = get_option('trail_map_button_color', '#0073aa'); // Default WordPress button color
+            $button_text_color = get_option('trail_map_button_text_color', '#ffffff');
+            $button_hover_color = get_option('trail_map_button_hover_color', '#005177');
+            $button_focus_color = get_option('trail_map_button_focus_color', '#005177');
+
             wp_localize_script('trail-map', 'pluginDirUrl', array(
                 'url' => trailingslashit(plugin_dir_url(__FILE__) . '../'),
-                'mapSettings' => $map_settings
+                'mapSettings' => $map_settings,
+                'buttonColor' => $button_color, // Pass button color to script
+                'buttonTextColor' => $button_text_color, // Pass button text color to script
+                'buttonHoverColor' => $button_hover_color, // Pass button hover color to script
+                'buttonFocusColor' => $button_focus_color // Pass button focus color to script
             ));
         }
 
-        public function render_map($atts) {
+        public function render_map($atts)
+        {
             $gpx_files = get_option('trail_map_gpx_files', array());
 
             if (empty($gpx_files)) {
@@ -58,11 +72,16 @@ if (!class_exists('My_Trail_Map')) {
 
             // URL des fichiers GPX
             $upload_dir = wp_upload_dir();
-            $gpx_file_urls = array_map(function($file) use ($upload_dir) {
-                if (is_array($file) && isset($file['name']) && isset($file['title'])) {
+            $gpx_file_urls = array_map(function ($file) use ($upload_dir) {
+                if (is_array($file) && isset($file['name']) && isset($file['title']) && isset($file['description'])) {
                     return [
                         'name' => $file['title'],
-                        'url' => $upload_dir['baseurl'] . '/gpx/' . $file['name']
+                        'url' => $upload_dir['baseurl'] . '/gpx/' . $file['name'],
+                        'description' => $file['description'],
+                        'distance' => $file['distance'],
+                        'difficulty' => $file['difficulty'],
+                        'duration' => $file['duration'],
+                        'precautions' => $file['precautions']
                     ];
                 }
                 return null;
@@ -72,31 +91,37 @@ if (!class_exists('My_Trail_Map')) {
             $gpx_file_urls = array_filter($gpx_file_urls);
 
             ob_start();
-            ?>
-            <h2 class="plugin-title" style="color: <?php echo esc_attr($section_title_color); ?>;"><?php echo esc_html($section_title); ?></h2> <!-- Afficher le titre de la section avec la couleur choisie -->
-             <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p> <!-- Explication de la géolocalisation -->
+?>
+            <h2 class="plugin-section-title" style="color: <?php echo esc_attr($section_title_color); ?>;"><?php echo esc_html($section_title); ?></h2>
+            <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p> <!-- Explication de la géolocalisation -->
             <div id="trail-map-controls">
                 <button id="show-all">Tous les itinéraires</button>
                 <?php foreach ($gpx_file_urls as $file) : ?>
-                    <button class="show-trail" data-url="<?php echo esc_url($file['url']); ?>"><?php echo esc_html($file['name']); ?></button>
+                    <button class="show-trail" data-url="<?php echo esc_url($file['url']); ?>" data-description="<?php echo esc_html($file['description']); ?>" data-distance="<?php echo esc_html($file['distance']); ?>" data-difficulty="<?php echo esc_html($file['difficulty']); ?>" data-duration="<?php echo esc_html($file['duration']); ?>" data-precautions="<?php echo esc_html($file['precautions']); ?>"><?php echo esc_html($file['name']); ?></button>
                 <?php endforeach; ?>
-                           </div>
-        
+            </div>
             <div id="map" style="height: 600px;"></div>
+            <div id="trail-description" class="trail-description">
+                <h3>Description de l'itinéraire</h3>
+                <p id="description"></p>
+                <p id="distance"></p>
+                <p id="difficulty"></p>
+                <p id="duration"></p>
+                <p id="precautions"></p>
+            </div>
             <script>
                 var gpxFiles = <?php echo json_encode($gpx_file_urls); ?>;
                 var pluginDirUrl = "<?php echo trailingslashit(plugin_dir_url(__FILE__) . '../'); ?>";
                 var mapSettings = <?php echo json_encode(get_option('trail_map_settings', array(
-                    'latitude' => '43.2743',
-                    'longitude' => '3.16982',
-                    'zoom' => '13'
-                ))); ?>;
+                                        'latitude' => '43.2743',
+                                        'longitude' => '3.16982',
+                                        'zoom' => '13'
+                                    ))); ?>;
                 console.log("pluginDirUrl in PHP:", pluginDirUrl);
             </script>
-            <?php
+<?php
             return ob_get_clean();
         }
-
     }
 }
 ?>

@@ -5,15 +5,15 @@ body,
     font-size: 15px;
 }
 
-.wrap h1
+.wrap .plugin-title
  {
     font-family: 'Roboto', sans-serif;
     font-size: 35px;
     color: #BD5606;
-    margin-bottom: 70px;
+    margin-bottom: 30px;
 }
 
-.wrap h2 {
+.wrap .plugin-h2 {
     font-family: 'Roboto', sans-serif;
     color: #BD5606;
 }
@@ -65,14 +65,12 @@ body,
 .wrap .wp-list-table th,
 .wrap .wp-list-table td {
     font-size: 15px;
-
 }
 
 .wrap {
     background-color: #F5F5F5;
     padding: 20px;
 }
-
 
 .form-table th {
     color: #666666;
@@ -93,4 +91,31 @@ body,
 
 .section-plugin {
   padding: 20px;
+}
+
+.plugin-section-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--section-title-color, #000000); 
+}
+ 
+.delete{
+    color: #BD5606;
+}
+
+.delete:hover {
+    color: red;
+}
+
+.edit {
+    color: #4D6544;
+}
+
+.edit:hover {
+    color: #849452;
+}
+
+/* admin-style.css */
+.back-button {
+    font-weight: 600;
 }

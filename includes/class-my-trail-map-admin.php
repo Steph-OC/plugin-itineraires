@@ -9,6 +9,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
             add_action('admin_menu', array($this, 'add_admin_menu'));
             add_action('admin_post_upload_gpx', array($this, 'handle_gpx_upload'));
             add_action('admin_post_delete_gpx_file', array($this, 'handle_delete_gpx_file'));
+            add_action('admin_post_edit_gpx_file', array($this, 'handle_edit_gpx_file'));
             add_action('admin_post_save_map_settings', array($this, 'save_map_settings'));
             add_action('admin_post_save_section_title', array($this, 'handle_save_section_title'));
             add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_styles'));
@@ -24,9 +25,17 @@ if (!class_exists('My_Trail_Map_Admin')) {
                 array($this, 'create_admin_page'),
                 'dashicons-location-alt'
             );
+
+            add_submenu_page(
+                null,
+                'Modifier l\'itinéraire GPX',
+                'Modifier l\'itinéraire GPX',
+                'manage_options',
+                'trail-map-edit',
+                array($this, 'create_edit_page')
+            );
         }
 
-        
         public function create_admin_page()
         {
             $map_settings = get_option('trail_map_settings', array(
@@ -36,35 +45,46 @@ if (!class_exists('My_Trail_Map_Admin')) {
             ));
             $section_title = get_option('trail_map_section_title', 'Trail Map - Gestion des itinéraires');
             $section_title_color = get_option('trail_map_section_title_color', '#000000');
-        ?>
+            $button_color = get_option('trail_map_button_color', '#0073aa'); // Default WordPress button color
+            $button_text_color = get_option('trail_map_button_text_color', '#ffffff');
+            $button_hover_color = get_option('trail_map_button_hover_color', '#005177');
+            $button_focus_color = get_option('trail_map_button_focus_color', '#005177');
+?>
             <div class="wrap">
+                <h1 class="plugin-title">Trail Map - Gestion des itinéraires</h1>
                 <div class="section-plugin">
-                    <h1>Trail Map - Gestion des itinéraires</h1>
-                    <h2>Personnalisation</h2>
-                    <form method="post" action="<?php echo admin_url('admin-post.php?action=save_section_title'); ?>">
-                        <?php wp_nonce_field('save_section_title', 'save_section_title_nonce'); ?>
-                        <table class="form-table">
-                            <tr valign="top">
-                                <th scope="row">Titre de la section</th>
-                                <td>
-                                    <input type="text" name="trail_map_section_title" value="<?php echo esc_attr($section_title); ?>" />
-                                    <small class="form-text">Entrez le titre de la section contenant le plugin.</small>
-                                </td>
+                    <h2 class="plugin-h2">Fichiers enregistrés</h2>
+                    <table class="wp-list-table widefat fixed striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Titre</th>
+                                <th scope="col">Nom du fichier</th>
+                                <th scope="col">Actions</th>
                             </tr>
-                            <tr valign="top">
-                        <th scope="row">Couleur du titre</th>
-                        <td>
-                            <input type="color" name="trail_map_section_title_color" value="<?php echo esc_attr($section_title_color); ?>" />
-                            <small class="form-text">Choisissez la couleur du titre de la section.</small>
-                        </td>
-                    </tr>
-                        </table>
-                        <?php submit_button('Enregistrer le titre'); ?>
-                    </form>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $gpx_files = get_option('trail_map_gpx_files', array());
+                            if (!empty($gpx_files)) {
+                                foreach ($gpx_files as $index => $file) {
+                                    echo '<tr>';
+                                    echo '<td>' . esc_html($file['title']) . '</td>';
+                                    echo '<td>' . esc_html($file['name']) . '</td>';
+                                    echo '<td>';
+                                    echo '<a href="' . esc_url(admin_url('admin.php?page=trail-map-edit&edit=' . $index)) . '" class="edit">Modifier</a> | ';
+                                    echo '<a href="' . esc_url(admin_url('admin-post.php?action=delete_gpx_file&file=' . urlencode($file['name']))) . '" class="delete">Supprimer</a>';
+                                    echo '</td>';
+                                    echo '</tr>';
+                                }
+                            } else {
+                                echo '<tr><td colspan="3">Aucun fichier GPX disponible.</td></tr>';
+                            }
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
-        
                 <div class="section-plugin">
-                    <h2>Fichiers d'itinéraires GPX</h2>
+                    <h2 class="plugin-h2">Nouvel itinéraire</h2>
                     <form method="post" action="<?php echo admin_url('admin-post.php?action=upload_gpx'); ?>" enctype="multipart/form-data">
                         <?php wp_nonce_field('upload_gpx', 'upload_gpx_nonce'); ?>
                         <table class="form-table">
@@ -79,45 +99,98 @@ if (!class_exists('My_Trail_Map_Admin')) {
                                 <th scope="row">Titre de l'itinéraire</th>
                                 <td>
                                     <input type="text" name="trail_map_gpx_title" />
-                                    <small class="form-text">Donnez un titre descriptif à l'itinéraire.</small>
+                                    <small class="form-text">Ce titre servira de libellé du bouton itinéraire.</small>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Nombre de kilomètres</th>
+                                <td><input type="text" name="trail_map_gpx_distance" />
+                                    <small class="form-text">Kms</small>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Niveau de difficulté</th>
+                                <td>
+                                    <select name="trail_map_gpx_difficulty">
+                                        <option value="facile">Facile</option>
+                                        <option value="moyen">Moyen</option>
+                                        <option value="difficile">Difficile</option>
+                                        <option value="tres-difficile">Très difficile</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Durée de la randonnée</th>
+                                <td><input type="text" name="trail_map_gpx_duration" /></td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Description de l'itinéraire</th>
+                                <td><textarea name="trail_map_gpx_description" rows="4" cols="50"></textarea></td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Précautions à prendre lors de cet itinéraire</th>
+                                <td><textarea name="trail_map_gpx_precautions" rows="4" cols="50"></textarea></td>
+                            </tr>
+                        </table>
+                        <?php submit_button('Enregistrer cette itinéraire'); ?>
+                    </form>
+                </div>
+
+                <div class="section-plugin">
+                    <h2 class="plugin-h2">Personnalisation</h2>
+                    <form method="post" action="<?php echo admin_url('admin-post.php?action=save_section_title'); ?>">
+                        <?php wp_nonce_field('save_section_title', 'save_section_title_nonce'); ?>
+                        <table class="form-table">
+                            <tr valign="top">
+                                <th scope="row">Titre de la section</th>
+                                <td>
+                                    <input type="text" name="trail_map_section_title" value="<?php echo esc_attr($section_title); ?>" />
+                                    <small class="form-text">Entrez le titre de la section contenant le plugin.</small>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Couleur du titre</th>
+                                <td>
+                                    <input type="color" name="trail_map_section_title_color" value="<?php echo esc_attr($section_title_color); ?>" />
+                                    <small class="form-text">Choisissez la couleur du titre de la section.</small>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Couleur des boutons des itinéraires</th>
+                                <td>
+                                    <input type="color" name="trail_map_button_color" value="<?php echo esc_attr($button_color); ?>" />
+                                    <small class="form-text">Choisissez la couleur des boutons des itinéraires.</small>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Couleur du texte des boutons</th>
+                                <td>
+                                    <input type="color" name="trail_map_button_text_color" value="<?php echo esc_attr($button_text_color); ?>" />
+                                    <small class="form-text">Choisissez la couleur du texte des boutons des itinéraires.</small>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Couleur de hover des boutons</th>
+                                <td>
+                                    <input type="color" name="trail_map_button_hover_color" value="<?php echo esc_attr($button_hover_color); ?>" />
+                                    <small class="form-text">Choisissez la couleur des boutons des itinéraires lorsque vous passer la souris dessus.</small>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Couleur de focus des boutons</th>
+                                <td>
+                                    <input type="color" name="trail_map_button_focus_color" value="<?php echo esc_attr($button_focus_color); ?>" />
+                                    <small class="form-text">Choisissez la couleur des boutons des itinéraires lorsqu'ils sont activés.</small>
                                 </td>
                             </tr>
                         </table>
-                        <?php submit_button('Téléverser un fichier GPX'); ?>
+                        <?php submit_button('Enregistrer la personnalisation'); ?>
                     </form>
                 </div>
-        
+
+
                 <div class="section-plugin">
-                    <h2>Fichiers enregistrés</h2>
-                    <table class="wp-list-table widefat fixed striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">Titre</th>
-                                <th scope="col">Nom du fichier</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $gpx_files = get_option('trail_map_gpx_files', array());
-                            if (!empty($gpx_files)) {
-                                foreach ($gpx_files as $file) {
-                                    echo '<tr>';
-                                    echo '<td>' . esc_html($file['title']) . '</td>';
-                                    echo '<td>' . esc_html($file['name']) . '</td>';
-                                    echo '<td><a href="' . esc_url(admin_url('admin-post.php?action=delete_gpx_file&file=' . urlencode($file['name']))) . '" class="supp">Supprimer</a></td>';
-                                    echo '</tr>';
-                                }
-                            } else {
-                                echo '<tr><td colspan="3">Aucun fichier GPX disponible.</td></tr>';
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-        
-                <div class="section-plugin">
-                    <h2>Paramètres de la carte</h2>
+                    <h2 class="plugin-h2">Paramètres de la carte</h2>
                     <form method="post" action="<?php echo admin_url('admin-post.php?action=save_map_settings'); ?>">
                         <?php wp_nonce_field('save_map_settings', 'save_map_settings_nonce'); ?>
                         <table class="form-table">
@@ -149,27 +222,100 @@ if (!class_exists('My_Trail_Map_Admin')) {
             </div>
         <?php
         }
-  
+
+        public function create_edit_page()
+        {
+            if (!isset($_GET['edit']) || !is_numeric($_GET['edit'])) {
+                wp_die('Paramètre d\'édition invalide.');
+            }
+
+            $index = intval($_GET['edit']);
+            $gpx_files = get_option('trail_map_gpx_files', array());
+
+            if (!isset($gpx_files[$index])) {
+                wp_die('Fichier GPX non trouvé.');
+            }
+
+            $file = $gpx_files[$index];
+        ?>
+            <div class="wrap">
+
+                <h1 class="plugin-title">Modifier l'itinéraire GPX</h1>
+                <a href="<?php echo admin_url('admin.php?page=trail-map'); ?>" class="button back-button">Retour à la gestion des itinéraires</a>
+                <form method="post" action="<?php echo admin_url('admin-post.php?action=edit_gpx_file'); ?>">
+                    <?php wp_nonce_field('edit_gpx_file', 'edit_gpx_file_nonce'); ?>
+                    <input type="hidden" name="trail_map_gpx_index" value="<?php echo esc_attr($index); ?>" />
+                    <table class="form-table">
+                        <tr valign="top">
+                            <th scope="row">Titre de l'itinéraire</th>
+                            <td><input type="text" name="trail_map_gpx_title" value="<?php echo esc_attr($file['title']); ?>" /></td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row">Description de l'itinéraire</th>
+                            <td><textarea name="trail_map_gpx_description" rows="4" cols="50"><?php echo esc_textarea($file['description']); ?></textarea></td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row">Nombre de kilomètres</th>
+                            <td><input type="text" name="trail_map_gpx_distance" value="<?php echo esc_attr($file['distance']); ?>" />
+                                <small class="form-text">Kms</small>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row">Niveau de difficulté</th>
+                            <td>
+                                <select name="trail_map_gpx_difficulty">
+                                    <option value="facile" <?php selected($file['difficulty'], 'facile'); ?>>Facile</option>
+                                    <option value="moyen" <?php selected($file['difficulty'], 'moyen'); ?>>Moyen</option>
+                                    <option value="difficile" <?php selected($file['difficulty'], 'difficile'); ?>>Difficile</option>
+                                    <option value="tres-difficile" <?php selected($file['difficulty'], 'tres-difficile'); ?>>Très difficile</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row">Durée de la randonnée</th>
+                            <td><input type="text" name="trail_map_gpx_duration" value="<?php echo esc_attr($file['duration']); ?>" /></td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row">Précautions à prendre lors de cet itinéraire</th>
+                            <td><textarea name="trail_map_gpx_precautions" rows="4" cols="50"><?php echo esc_textarea($file['precautions']); ?></textarea></td>
+                        </tr>
+                    </table>
+                    <?php submit_button('Enregistrer les modifications'); ?>
+                </form>
+            </div>
+<?php
+        }
+
         public function handle_save_section_title()
-{
-    if (!isset($_POST['save_section_title_nonce']) || !wp_verify_nonce($_POST['save_section_title_nonce'], 'save_section_title')) {
-        wp_die('Nonce verification failed');
-    }
+        {
+            if (!isset($_POST['save_section_title_nonce']) || !wp_verify_nonce($_POST['save_section_title_nonce'], 'save_section_title')) {
+                wp_die('Nonce verification failed');
+            }
 
-    $section_title = sanitize_text_field($_POST['trail_map_section_title']);
-    $section_title_color = sanitize_hex_color($_POST['trail_map_section_title_color']);
-    update_option('trail_map_section_title', $section_title);
-    update_option('trail_map_section_title_color', $section_title_color);
+            $section_title = sanitize_text_field($_POST['trail_map_section_title']);
+            $section_title_color = sanitize_hex_color($_POST['trail_map_section_title_color']);
+            $button_color = sanitize_hex_color($_POST['trail_map_button_color']); // Save button color
+            $button_text_color = sanitize_hex_color($_POST['trail_map_button_text_color']); // Save button text color
+            $button_hover_color = sanitize_hex_color($_POST['trail_map_button_hover_color']); // Save button hover color
+            $button_focus_color = sanitize_hex_color($_POST['trail_map_button_focus_color']); // Save button focus color
 
-    wp_redirect(admin_url('admin.php?page=trail-map'));
-    exit;
-}
+            update_option('trail_map_section_title', $section_title);
+            update_option('trail_map_section_title_color', $section_title_color);
+            update_option('trail_map_button_color', $button_color); // Save button color
+            update_option('trail_map_button_text_color', $button_text_color); // Save button text color
+            update_option('trail_map_button_hover_color', $button_hover_color); // Save button hover color
+            update_option('trail_map_button_focus_color', $button_focus_color); // Save button focus color
 
-
-
+            wp_redirect(admin_url('admin.php?page=trail-map'));
+            exit;
+        }
 
         public function handle_gpx_upload()
-        {
+        { 
+            if (!current_user_can('manage_options')) {
+            wp_die('Vous n\'avez pas la permission d\accéder à cette page.');
+        }
+
             if (!isset($_POST['upload_gpx_nonce']) || !wp_verify_nonce($_POST['upload_gpx_nonce'], 'upload_gpx')) {
                 wp_die('Nonce verification failed');
             }
@@ -177,6 +323,11 @@ if (!class_exists('My_Trail_Map_Admin')) {
             if (!empty($_FILES['trail_map_gpx_file']['name'])) {
                 $uploaded_file = $_FILES['trail_map_gpx_file'];
                 $uploaded_title = sanitize_text_field($_POST['trail_map_gpx_title']);
+                $uploaded_description = sanitize_textarea_field($_POST['trail_map_gpx_description']);
+                $uploaded_distance = sanitize_text_field($_POST['trail_map_gpx_distance']);
+                $uploaded_difficulty = sanitize_text_field($_POST['trail_map_gpx_difficulty']);
+                $uploaded_duration = sanitize_text_field($_POST['trail_map_gpx_duration']);
+                $uploaded_precautions = sanitize_textarea_field($_POST['trail_map_gpx_precautions']);
 
                 if ($uploaded_file['error'] == UPLOAD_ERR_OK) {
                     $upload_dir = wp_upload_dir();
@@ -190,7 +341,12 @@ if (!class_exists('My_Trail_Map_Admin')) {
                         $gpx_files = get_option('trail_map_gpx_files', array());
                         $gpx_files[] = array(
                             'name' => basename($uploaded_file['name']),
-                            'title' => $uploaded_title
+                            'title' => $uploaded_title,
+                            'description' => $uploaded_description,
+                            'distance' => $uploaded_distance,
+                            'difficulty' => $uploaded_difficulty,
+                            'duration' => $uploaded_duration,
+                            'precautions' => $uploaded_precautions
                         );
                         update_option('trail_map_gpx_files', $gpx_files);
                     } else {
@@ -200,6 +356,39 @@ if (!class_exists('My_Trail_Map_Admin')) {
                     wp_die('Upload error: ' . $uploaded_file['error']);
                 }
             }
+            wp_redirect(admin_url('admin.php?page=trail-map'));
+            exit;
+        }
+
+        public function handle_edit_gpx_file()
+        {
+            if (!isset($_POST['edit_gpx_file_nonce']) || !wp_verify_nonce($_POST['edit_gpx_file_nonce'], 'edit_gpx_file')) {
+                wp_die('Nonce verification failed');
+            }
+
+            if (!isset($_POST['trail_map_gpx_index']) || !is_numeric($_POST['trail_map_gpx_index'])) {
+                wp_die('Paramètre d\'édition invalide.');
+            }
+
+            $index = intval($_POST['trail_map_gpx_index']);
+            $gpx_files = get_option('trail_map_gpx_files', array());
+
+            if (!isset($gpx_files[$index])) {
+                wp_die('Fichier GPX non trouvé.');
+            }
+
+            $gpx_files[$index] = array(
+                'name' => $gpx_files[$index]['name'],
+                'title' => sanitize_text_field($_POST['trail_map_gpx_title']),
+                'description' => sanitize_textarea_field($_POST['trail_map_gpx_description']),
+                'distance' => sanitize_text_field($_POST['trail_map_gpx_distance']),
+                'difficulty' => sanitize_text_field($_POST['trail_map_gpx_difficulty']),
+                'duration' => sanitize_text_field($_POST['trail_map_gpx_duration']),
+                'precautions' => sanitize_textarea_field($_POST['trail_map_gpx_precautions']),
+            );
+
+            update_option('trail_map_gpx_files', $gpx_files);
+
             wp_redirect(admin_url('admin.php?page=trail-map'));
             exit;
         }
@@ -227,28 +416,26 @@ if (!class_exists('My_Trail_Map_Admin')) {
             if (!isset($_POST['save_map_settings_nonce']) || !wp_verify_nonce($_POST['save_map_settings_nonce'], 'save_map_settings')) {
                 wp_die('Nonce verification failed');
             }
-        
+
             $latitude = sanitize_text_field($_POST['trail_map_latitude']);
             $longitude = sanitize_text_field($_POST['trail_map_longitude']);
             $zoom = sanitize_text_field($_POST['trail_map_zoom']);
             $section_title = sanitize_text_field($_POST['trail_map_section_title']);
             $section_title_color = sanitize_hex_color($_POST['trail_map_section_title_color']);
-        
+
             $map_settings = array(
                 'latitude' => $latitude,
                 'longitude' => $longitude,
                 'zoom' => $zoom
             );
-        
+
             update_option('trail_map_settings', $map_settings);
             update_option('trail_map_section_title', $section_title);
             update_option('trail_map_section_title_color', $section_title_color);
-        
+
             wp_redirect(admin_url('admin.php?page=trail-map'));
             exit;
         }
-
-
 
         public function enqueue_admin_styles()
         {
@@ -257,3 +444,4 @@ if (!class_exists('My_Trail_Map_Admin')) {
         }
     }
 }
+?>

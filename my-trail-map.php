@@ -3,7 +3,7 @@
 Plugin Name: My Trail Map
 Description: Plugin custom pour afficher des cartes GPX.
 Version: 1.0
-Author: Votre Nom
+Author: Stéphanie Quibel
 License: GPL2
 */
 
