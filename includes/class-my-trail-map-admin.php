@@ -83,12 +83,13 @@ if (!class_exists('My_Trail_Map_Admin')) {
             $button_text_color = get_option('trail_map_button_text_color', '#ffffff');
             $button_hover_color = get_option('trail_map_button_hover_color', '#005177');
             $button_focus_color = get_option('trail_map_button_focus_color', '#005177');
+            $show_all_button = get_option('trail_map_show_all_button', 1); // Récupère l'option pour le bouton "Tous les itinéraires"
 ?>
             <div class="wrap">
                 <h1 class="plugin-title">Trail Map - Gestion des itinéraires</h1>
 
                 <div class="section-plugin">
-                    <h2>Shortcode</h2>
+                    <h2 class="plugin-h2">Shortcode</h2>
                     <p>Utilisez le shortcode suivant pour afficher la carte des itinéraires sur vos pages ou articles :</p>
                     <code id="trail-map-shortcode">[trail_map]</code> <button id="copy-shortcode" class="button">Copier</button>
                 </div>
@@ -201,6 +202,13 @@ if (!class_exists('My_Trail_Map_Admin')) {
                                 </td>
                             </tr>
                             <tr valign="top">
+                                <th scope="row">Afficher le bouton "Tous les itinéraires"</th>
+                                <td>
+                                    <input type="checkbox" name="trail_map_show_all_button" <?php checked($show_all_button, 1); ?> />
+                                    <small class="form-text">Cochez cette case pour afficher le bouton "Tous les itinéraires".</small>
+                                </td>
+                            </tr>
+                            <tr valign="top">
                                 <th scope="row">Couleur des boutons des itinéraires</th>
                                 <td>
                                     <input type="color" name="trail_map_button_color" value="<?php echo esc_attr($button_color); ?>" />
@@ -264,7 +272,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
                     </form>
                 </div>
             </div>
-<?php
+        <?php
         }
 
         public function create_edit_page()
@@ -281,7 +289,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
             }
 
             $file = $gpx_files[$index];
-?>
+        ?>
             <div class="wrap">
                 <h1 class="plugin-title">Modifier l'itinéraire GPX</h1>
                 <a href="<?php echo admin_url('admin.php?page=trail-map'); ?>" class="button back-button">Retour à la gestion des itinéraires</a>
@@ -341,6 +349,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
             $button_text_color = sanitize_hex_color($_POST['trail_map_button_text_color']); // Save button text color
             $button_hover_color = sanitize_hex_color($_POST['trail_map_button_hover_color']); // Save button hover color
             $button_focus_color = sanitize_hex_color($_POST['trail_map_button_focus_color']); // Save button focus color
+            $show_all_button = isset($_POST['trail_map_show_all_button']) ? 1 : 0; // Capture la valeur de la case à cocher
 
             update_option('trail_map_section_title', $section_title);
             update_option('trail_map_section_title_color', $section_title_color);
@@ -348,6 +357,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
             update_option('trail_map_button_text_color', $button_text_color); // Save button text color
             update_option('trail_map_button_hover_color', $button_hover_color); // Save button hover color
             update_option('trail_map_button_focus_color', $button_focus_color); // Save button focus color
+            update_option('trail_map_show_all_button', $show_all_button);
 
             wp_redirect(admin_url('admin.php?page=trail-map&message=section_title_updated'));
             exit;

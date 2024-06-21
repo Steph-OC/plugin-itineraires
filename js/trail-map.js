@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (copyButton && shortcodeElement) {
         console.log('Copy button and shortcode element found');
-        copyButton.addEventListener('click', function () {
+        copyButton.addEventListener('click', function() {
             const range = document.createRange();
             range.selectNode(shortcodeElement);
             window.getSelection().removeAllRanges();
@@ -173,32 +173,47 @@ document.addEventListener('DOMContentLoaded', function () {
                                                 <h3>Description</h3>
                                                 <p>${description}</p>
                                                 <p><strong>Précautions :</strong> ${precautions}</p>`;
+                descriptionElement.style.display = 'block'; // Show description for individual trails
             }
         });
     });
 
-    document.querySelector('#show-all').style.backgroundColor = buttonColor;
-    document.querySelector('#show-all').style.color = buttonTextColor;
-    document.querySelector('#show-all').addEventListener('mouseover', function () {
-        document.querySelector('#show-all').style.backgroundColor = buttonHoverColor;
-    });
-    document.querySelector('#show-all').addEventListener('mouseout', function () {
-        document.querySelector('#show-all').style.backgroundColor = buttonColor;
-    });
-    document.querySelector('#show-all').addEventListener('focus', function () {
-        document.querySelector('#show-all').style.backgroundColor = buttonFocusColor;
-    });
-    document.querySelector('#show-all').addEventListener('blur', function () {
-        document.querySelector('#show-all').style.backgroundColor = buttonColor;
-    });
-    document.querySelector('#show-all').addEventListener('click', function () {
-        const urls = Array.from(document.querySelectorAll('.show-trail')).map(button => button.getAttribute('data-url'));
-        showAllTrails(urls);
+    const showAllButton = document.querySelector('#show-all');
+    if (showAllButton) {
+        showAllButton.style.backgroundColor = buttonColor;
+        showAllButton.style.color = buttonTextColor;
+        showAllButton.addEventListener('mouseover', function () {
+            showAllButton.style.backgroundColor = buttonHoverColor;
+        });
+        showAllButton.addEventListener('mouseout', function () {
+            showAllButton.style.backgroundColor = buttonColor;
+        });
+        showAllButton.addEventListener('focus', function () {
+            showAllButton.style.backgroundColor = buttonFocusColor;
+        });
+        showAllButton.addEventListener('blur', function () {
+            showAllButton.style.backgroundColor = buttonColor;
+        });
+        showAllButton.addEventListener('click', function () {
+            const urls = Array.from(document.querySelectorAll('.show-trail')).map(button => button.getAttribute('data-url'));
+            showAllTrails(urls);
+            const descriptionElement = document.getElementById('trail-description');
+            if (descriptionElement) {
+                descriptionElement.style.display = 'none'; // Hide description for "show all"
+            }
+        });
+    } else {
+        const showAllButtonElement = document.getElementById('show-all');
+        if (showAllButtonElement) {
+            showAllButtonElement.style.display = 'none'; // Hide the button
+        }
+    }
+
+        // Masquer la section de description par défaut
         const descriptionElement = document.getElementById('trail-description');
         if (descriptionElement) {
-            descriptionElement.innerText = '';
+            descriptionElement.style.display = 'none';
         }
-    });
 
     // Bouton de géolocalisation
     let userMarker;

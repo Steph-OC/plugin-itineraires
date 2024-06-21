@@ -57,13 +57,15 @@ if (!class_exists('My_Trail_Map')) {
                 'buttonColor' => $button_color,
                 'buttonTextColor' => $button_text_color,
                 'buttonHoverColor' => $button_hover_color,
-                'buttonFocusColor' => $button_focus_color
+                'buttonFocusColor' => $button_focus_color,
+                'showAllButton' => get_option('trail_map_show_all_button', true) // Ajoutez cette ligne
             ));
         }
 
         public function render_map($atts)
         {
             $gpx_files = get_option('trail_map_gpx_files', array());
+            $show_all_button = get_option('trail_map_show_all_button', 1);
 
             // Filtrer les fichiers visibles
             $gpx_files = array_filter($gpx_files, function ($file) {
@@ -76,7 +78,7 @@ if (!class_exists('My_Trail_Map')) {
 
             $section_title = get_option('trail_map_section_title', 'Trail Map');
             $section_title_color = get_option('trail_map_section_title_color', '#000000');
-
+            
             $upload_dir = wp_upload_dir();
             $gpx_file_urls = array_map(function ($file) use ($upload_dir) {
                 return [
@@ -97,7 +99,11 @@ if (!class_exists('My_Trail_Map')) {
             <h2 class="plugin-section-title" style="color: <?php echo esc_attr($section_title_color); ?>;"><?php echo esc_html($section_title); ?></h2>
             <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p>
             <div id="trail-map-controls">
-                <button id="show-all">Tous les itinéraires</button>
+            <?php if ($show_all_button): ?>
+            <button id="show-all">Tous les itinéraires</button>
+        <?php endif; ?>
+
+
                 <?php foreach ($gpx_file_urls as $file) : ?>
                     <button class="show-trail" data-url="<?php echo esc_url($file['url']); ?>" data-description="<?php echo esc_html($file['description']); ?>" data-distance="<?php echo esc_html($file['distance']); ?>" data-difficulty="<?php echo esc_html($file['difficulty']); ?>" data-duration="<?php echo esc_html($file['duration']); ?>" data-precautions="<?php echo esc_html($file['precautions']); ?>"><?php echo esc_html($file['name']); ?></button>
                 <?php endforeach; ?>
