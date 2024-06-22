@@ -1,18 +1,6 @@
 /* Front-end styles for my plugin */
 /* style.css */
-#trail-map-controls {
-    font-family: 'Roboto', sans-serif;
-}
-
-#trail-map-controls button {
-    font-family: 'Roboto', sans-serif;
-}
-
-.leaflet-bar a {
-    font-family: 'Roboto', sans-serif;
-}
-
-.user-location-icon {
+body {
     font-family: 'Roboto', sans-serif;
 }
 
@@ -21,8 +9,8 @@
     text-align: center;
     font-weight: 600;
     margin-bottom: 5%;
- 
 }
+
 #trail-map-controls {
     display: flex;
     flex-direction: row;
@@ -30,13 +18,12 @@
     justify-content: center;
     flex-wrap: wrap;
     margin-bottom: 20px;
-  
+    font-family: 'Roboto', sans-serif;
 }
 
 #trail-map-controls button {
     background-color: #849452;
     color: #FFFFFF;
-    font-family: 'Roboto', sans-serif;
     font-size: 17px;
     border: none;
     padding: 10px 20px;
@@ -45,12 +32,14 @@
     margin: 10px;
 }
 
-#trail-map-controls button:hover {
+#trail-map-controls button:hover,
+#trail-map-controls button:focus {
     background-color: #BD5606;
 }
 
-#trail-map-controls button:focus {
-    background-color: #BD5606;
+.leaflet-bar a,
+.user-location-icon {
+    font-family: 'Roboto', sans-serif;
 }
 
 .leaflet-control-locate {
@@ -64,6 +53,26 @@
     background-color: #00ff00;
 }
 
+.leaflet-control-locate.locate-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background-color: white;
+    border-radius: 4px;
+    color: red;
+    cursor: pointer;
+}
+
+.leaflet-control-locate.locate-icon.enabled {
+    color: green;
+}
+
+.leaflet-control-locate.locate-icon i {
+    font-size: 20px;
+}
+
 .locate-icon-red {
     color: red !important;
 }
@@ -74,7 +83,7 @@
 
 .fa-street-view {
     color: #BD5606;
-    font-size: 25px;
+    font-size: 30px;
 }
 
 .location-error-notification {
@@ -86,41 +95,17 @@
     padding: 10px 20px;
     border-radius: 5px;
     z-index: 1000;
-    font-family: 'Roboto', sans-serif;
 }
 
-.leaflet-control-locate.locate-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    background-color: white; /* Couleur par défaut */
-    border-radius: 4px;
-    color: red;
-    cursor: pointer;
-}
-
-.leaflet-control-locate.locate-icon.enabled {
-    color: green; /* Couleur lorsque l'icône est activée */
-}
-
-.leaflet-control-locate.locate-icon i {
-    font-size: 20px;
-}
 .geoloc-explanation {
     font-size: 15px;
     text-align: center;
     color: #4D6544;
 }
+
 .plugin-section-title {
     font-family: 'Roboto', sans-serif;
     text-align: center;
-}
-
-.fa-street-view {
-    font-size: 30px;
-    color: #BD5606;
 }
 
 /* description front */
@@ -130,7 +115,6 @@
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 5px;
-    font-family: 'Roboto', sans-serif;
 }
 
 .trail-description h3 {

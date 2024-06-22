@@ -78,7 +78,7 @@ if (!class_exists('My_Trail_Map')) {
 
             $section_title = get_option('trail_map_section_title', 'Trail Map');
             $section_title_color = get_option('trail_map_section_title_color', '#000000');
-            
+
             $upload_dir = wp_upload_dir();
             $gpx_file_urls = array_map(function ($file) use ($upload_dir) {
                 return [
@@ -99,9 +99,9 @@ if (!class_exists('My_Trail_Map')) {
             <h2 class="plugin-section-title" style="color: <?php echo esc_attr($section_title_color); ?>;"><?php echo esc_html($section_title); ?></h2>
             <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p>
             <div id="trail-map-controls">
-            <?php if ($show_all_button): ?>
-            <button id="show-all">Tous les itinéraires</button>
-        <?php endif; ?>
+                <?php if ($show_all_button) : ?>
+                    <button id="show-all">Tous les itinéraires</button>
+                <?php endif; ?>
 
 
                 <?php foreach ($gpx_file_urls as $file) : ?>

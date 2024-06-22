@@ -5,8 +5,7 @@ body,
     font-size: 15px;
 }
 
-.wrap .plugin-title
- {
+.wrap .plugin-title {
     font-family: 'Roboto', sans-serif;
     font-size: 35px;
     color: #BD5606;
@@ -21,7 +20,7 @@ body,
 .wrap .plugin-p {
     font-family: 'Roboto', sans-serif;
     font-weight: 600;
-    
+
 }
 
 .wrap table {
@@ -96,16 +95,16 @@ body,
 }
 
 .section-plugin {
-  padding: 20px;
+    padding: 20px;
 }
 
 .plugin-section-title {
     font-size: 24px;
     font-weight: bold;
-    color: var(--section-title-color, #000000); 
+    color: var(--section-title-color, #000000);
 }
- 
-.delete{
+
+.delete {
     color: #BD5606;
 }
 

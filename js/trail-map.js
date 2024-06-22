@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (copyButton && shortcodeElement) {
         console.log('Copy button and shortcode element found');
-        copyButton.addEventListener('click', function() {
+        copyButton.addEventListener('click', function () {
             const range = document.createRange();
             range.selectNode(shortcodeElement);
             window.getSelection().removeAllRanges();
@@ -209,11 +209,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-        // Masquer la section de description par défaut
-        const descriptionElement = document.getElementById('trail-description');
-        if (descriptionElement) {
-            descriptionElement.style.display = 'none';
-        }
+    // Masquer la section de description par défaut
+    const descriptionElement = document.getElementById('trail-description');
+    if (descriptionElement) {
+        descriptionElement.style.display = 'none';
+    }
 
     // Bouton de géolocalisation
     let userMarker;
