@@ -64,3 +64,58 @@ This plugin is licensed under the GPLv2 or later. For more information, see [Lic
 == Author Information ==
 
 This plugin was developed by Stephanie Quibel. For more information, visit [Stephanie Quibel's Professional Site](https://www.stephaniequibel.fr/).
+
+== Description (Français) ==
+
+My Trail Map est un plugin WordPress personnalisé conçu pour afficher des cartes de sentiers GPX sur votre site. Avec ce plugin, vous pouvez télécharger des fichiers GPX, afficher des itinéraires individuels et personnaliser l'apparence de vos boutons d'itinéraires.
+
+= Fonctionnalités =
+* Téléchargez et gérez des fichiers GPX.
+* Affichez des cartes de sentiers individuels avec des descriptions, distances, difficultés, durées et précautions.
+* Boutons d'itinéraires personnalisables (couleur, couleur du texte, couleur au survol, couleur au focus).
+* Bouton optionnel "Tous les itinéraires" pour afficher tous les itinéraires sur une seule carte.
+* Interface d'administration pour gérer les itinéraires et personnaliser les paramètres d'affichage.
+
+== Installation ==
+
+1. Téléchargez les fichiers du plugin dans le répertoire `/wp-content/plugins/my-trail-map`, ou installez le plugin directement via l'écran des plugins de WordPress.
+2. Activez le plugin via l'écran 'Extensions' dans WordPress.
+3. Utilisez l'écran Paramètres->Trail Map pour configurer le plugin.
+4. Ajoutez le shortcode `[trail_map]` à n'importe quelle page ou article pour afficher la carte des itinéraires.
+
+== Questions fréquentes ==
+
+= Comment puis-je télécharger un fichier GPX ? =
+
+1. Accédez à la page des paramètres Trail Map dans l'administration WordPress.
+2. Utilisez la section "Téléverser un fichier GPX" pour téléverser votre fichier GPX et remplir les détails de l'itinéraire.
+3. Cliquez sur "Enregistrer" pour ajouter le fichier GPX à votre liste d'itinéraires.
+
+= Comment puis-je personnaliser les couleurs des boutons d'itinéraires ? =
+
+1. Accédez à la page des paramètres Trail Map dans l'administration WordPress.
+2. Utilisez la section "Personnalisation" pour sélectionner les couleurs souhaitées des boutons.
+3. Cliquez sur "Enregistrer" pour appliquer les modifications.
+
+== Captures d'écran ==
+
+1. **Interface d'administration** - Gérez vos fichiers GPX et personnalisez les paramètres d'affichage de la carte.
+2. **Affichage de la carte des itinéraires** - Exemple d'une carte d'itinéraire affichée sur une page WordPress.
+
+== Journal des modifications ==
+
+= 1.0 =
+* Première version.
+
+== Avis de mise à jour ==
+
+= 1.0 =
+* Première version du plugin My Trail Map.
+
+== Licence ==
+
+Ce plugin est sous licence GPLv2 ou ultérieure. Pour plus d'informations, voir [URI de la licence](https://www.gnu.org/licenses/gpl-2.0.html).
+
+== Informations sur l'auteur ==
+
+Ce plugin a été développé par Stéphanie Quibel. Pour plus d'informations, visitez [le site professionnel de Stéphanie Quibel](https://www.stephaniequibel.fr/).
