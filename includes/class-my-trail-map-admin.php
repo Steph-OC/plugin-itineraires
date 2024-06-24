@@ -85,13 +85,13 @@ if (!class_exists('My_Trail_Map_Admin')) {
             $button_focus_color = get_option('trail_map_button_focus_color', '#005177');
             $show_all_button = get_option('trail_map_show_all_button', 1); // Récupère l'option pour le bouton "Tous les itinéraires"
 ?>
-            <div class="wrap">
+            <div class="wrap trail-map-admin">
                 <h1 class="plugin-title">Trail Map - Gestion des itinéraires</h1>
 
                 <div class="section-plugin">
                     <h2 class="plugin-h2">Shortcode</h2>
                     <p>Utilisez le shortcode suivant pour afficher la carte des itinéraires sur vos pages ou articles :</p>
-                    <code id="trail-map-shortcode">[trail_map]</code> <button id="copy-shortcode" class="button">Copier</button>
+                    <code id="trail-map-shortcode">[trail_map]</code> <button id="copy-shortcode" class="button-copy">Copier le shortcode</button>
                 </div>
 
                 <div class="section-plugin">
@@ -268,8 +268,25 @@ if (!class_exists('My_Trail_Map_Admin')) {
                                 </td>
                             </tr>
                         </table>
+                        <p>Pour obtenir les coordonnées GPS de n'importe quel endroit, vous pouvez utiliser le site <a href="https://www.latlong.net/" target="_blank">LatLong.net</a>.</p>
                         <?php submit_button('Enregistrer les paramètres'); ?>
                     </form>
+                </div>
+
+                <div class="section-plugin">
+                    <h2 class="plugin-h2">Documentation</h2>
+                    <p>Pour plus d'informations sur l'utilisation du plugin, veuillez consulter le <a href="#" id="open-readme-modal">fichier readme</a>.</p>
+                </div>
+
+                <!-- L'overlay -->
+                <div id="readmeOverlay" class="readme-overlay"></div>
+
+                <!-- La modale -->
+                <div id="readmeModal" class="readme-modal">
+                    <div class="readme-modal-content">
+                        <span class="readme-close">&times;</span>
+                        <pre id="readmeContent"></pre>
+                    </div>
                 </div>
             </div>
         <?php
@@ -290,7 +307,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
 
             $file = $gpx_files[$index];
         ?>
-            <div class="wrap">
+            <div class="wrap trail-map-admin">
                 <h1 class="plugin-title">Modifier l'itinéraire GPX</h1>
                 <a href="<?php echo admin_url('admin.php?page=trail-map'); ?>" class="button back-button">Retour à la gestion des itinéraires</a>
                 <form method="post" action="<?php echo admin_url('admin-post.php?action=edit_gpx_file'); ?>">
@@ -519,14 +536,15 @@ if (!class_exists('My_Trail_Map_Admin')) {
         {
             $screen = get_current_screen();
             if ($screen->id === 'toplevel_page_trail-map') {
-                error_log('Enqueueing trail-map.js');
                 wp_enqueue_script('my-plugin-admin-js', plugin_dir_url(__FILE__) . '../js/trail-map.js', array('jquery'), null, true);
+                wp_enqueue_script('my-plugin-admin-admin-js', plugin_dir_url(__FILE__) . '../js/admin-trail-map.js', array('jquery'), null, true);
                 wp_localize_script('my-plugin-admin-js', 'pluginDirUrl', array(
                     'buttonColor' => get_option('trail_map_button_color', '#0073aa'),
                     'buttonTextColor' => get_option('trail_map_button_text_color', '#ffffff'),
                     'buttonHoverColor' => get_option('trail_map_button_hover_color', '#005177'),
                     'buttonFocusColor' => get_option('trail_map_button_focus_color', '#005177'),
-                    'sectionTitleColor' => get_option('trail_map_section_title_color', '#000000')
+                    'sectionTitleColor' => get_option('trail_map_section_title_color', '#000000'),
+                    'readmeUrl' => plugin_dir_url(__FILE__) . '../README.md'
                 ));
             }
         }

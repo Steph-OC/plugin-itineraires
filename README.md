@@ -42,34 +42,6 @@ My Trail Map is a custom WordPress plugin designed to display GPX trail maps on 
 2. Use the "Customization" section to select your desired button colors.
 3. Click "Save" to apply the changes.
 
-= How do I convert other file formats to GPX? =
-
-If you have files in other formats (such as KML, TCX, etc.), you can convert them to GPX using the following methods:
-
-1. **Using GPSBabel**:
-   - Download and install GPSBabel from [here](https://www.gpsbabel.org/download.html).
-   - Open GPSBabel.
-   - In the `Input` tab, select the format of your source file (e.g., KML, TCX).
-   - Click `File Name` and select the file you want to convert.
-   - In the `Output` tab, select `GPX XML` as the output format.
-   - Click `File Name` and choose where to save the converted GPX file.
-   - Click `OK` to start the conversion.
-
-2. **Using an online service**:
-   - Visit [GPS Visualizer](https://www.gpsvisualizer.com/).
-   - Click on `Convert a GPS file`.
-   - Upload your source file using the `Choose File` button.
-   - Select `GPX` as the output format.
-   - Click `Convert` to convert the file and download the GPX file.
-
-   Alternatively, you can use [MyGeodata Cloud](https://mygeodata.cloud/converter/):
-   - Visit the website.
-   - Click on `Upload your data` and upload your source file.
-   - Select `GPX` as the output format.
-   - Click `Convert Now` to start the conversion and download the GPX file.
-
-Once you have your GPX file, you can upload it to the plugin as described above.
-
 == Screenshots ==
 
 1. **Admin Interface** - Manage your GPX files and customize the map display settings.
@@ -92,8 +64,6 @@ This plugin is licensed under the GPLv2 or later. For more information, see [Lic
 == Author Information ==
 
 This plugin was developed by Stephanie Quibel. For more information, visit [Stephanie Quibel's Professional Site](https://www.stephaniequibel.fr/).
-
-
 
 == Description (Français) ==
 
@@ -127,34 +97,6 @@ My Trail Map est un plugin WordPress personnalisé conçu pour afficher des cart
 2. Utilisez la section "Personnalisation" pour sélectionner les couleurs souhaitées des boutons.
 3. Cliquez sur "Enregistrer" pour appliquer les modifications.
 
-= Comment puis-je convertir d'autres formats de fichiers en GPX ? =
-
-Si vous avez des fichiers dans d'autres formats (comme KML, TCX, etc.), vous pouvez les convertir en GPX en utilisant les méthodes suivantes :
-
-1. **Utiliser GPSBabel** :
-   - Téléchargez et installez GPSBabel depuis [ce lien](https://www.gpsbabel.org/download.html).
-   - Ouvrez GPSBabel.
-   - Dans l'onglet `Input`, sélectionnez le format de votre fichier source (par exemple, KML, TCX).
-   - Cliquez sur `File Name` et sélectionnez le fichier que vous souhaitez convertir.
-   - Dans l'onglet `Output`, sélectionnez `GPX XML` comme format de sortie.
-   - Cliquez sur `File Name` et choisissez où enregistrer le fichier GPX converti.
-   - Cliquez sur `OK` pour démarrer la conversion.
-
-2. **Utiliser un service en ligne** :
-   - Allez sur [GPS Visualizer](https://www.gpsvisualizer.com/).
-   - Cliquez sur `Convert a GPS file`.
-   - Téléchargez votre fichier source en utilisant le bouton `Choose File`.
-   - Sélectionnez `GPX` comme format de sortie.
-   - Cliquez sur `Convert` pour convertir le fichier et télécharger le fichier GPX.
-
-   Vous pouvez également utiliser [MyGeodata Cloud](https://mygeodata.cloud/converter/) :
-   - Allez sur le site web.
-   - Cliquez sur `Upload your data` et téléchargez votre fichier source.
-   - Sélectionnez `GPX` comme format de sortie.
-   - Cliquez sur `Convert Now` pour démarrer la conversion et télécharger le fichier GPX.
-
-Une fois que vous avez votre fichier GPX, vous pouvez le télécharger dans le plugin comme décrit ci-dessus.
-
 == Captures d'écran ==
 
 1. **Interface d'administration** - Gérez vos fichiers GPX et personnalisez les paramètres d'affichage de la carte.
@@ -172,7 +114,7 @@ Une fois que vous avez votre fichier GPX, vous pouvez le télécharger dans le p
 
 == Licence ==
 
-Ce plugin est sous ou ultérieure. Pour plus d'informations, voir [URI de la licence](https://www.gnu.org/licenses/gpl-2.0.html).
+Ce plugin est sous licence GPLv2 ou ultérieure. Pour plus d'informations, voir [URI de la licence](https://www.gnu.org/licenses/gpl-2.0.html).
 
 == Informations sur l'auteur ==
 

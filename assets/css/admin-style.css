@@ -1,55 +1,54 @@
 /* admin-style.css */
-body,
-.wrap {
+.trail-map-admin body,
+.trail-map-admin .wrap {
     font-family: 'Roboto', sans-serif;
     font-size: 15px;
 }
 
-.wrap .plugin-title {
+.trail-map-admin .plugin-title {
     font-family: 'Roboto', sans-serif;
     font-size: 35px;
     color: #BD5606;
     margin-bottom: 30px;
 }
 
-.wrap .plugin-h2 {
+.trail-map-admin .plugin-h2 {
     font-family: 'Roboto', sans-serif;
     color: #BD5606;
 }
 
-.wrap .plugin-p {
+.trail-map-admin .plugin-p {
     font-family: 'Roboto', sans-serif;
     font-weight: 600;
-
 }
 
-.wrap table {
+.trail-map-admin table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.wrap table th,
-.wrap table td {
+.trail-map-admin table th,
+.trail-map-admin table td {
     padding: 10px;
     border: 1px solid #ddd;
     text-align: left;
 }
 
-.wrap table th {
+.trail-map-admin table th {
     background-color: #f4f4f4;
     font-weight: bold;
 }
 
-.wrap .form-table th {
+.trail-map-admin .form-table th {
     width: 200px;
 }
 
-.wrap .form-table td {
+.trail-map-admin .form-table td {
     width: calc(100% - 200px);
 }
 
-.wrap .button-primary {
+.trail-map-admin .button-primary {
     background-color: #4D6544;
     border-color: #4D6544;
     color: #fff;
@@ -61,66 +60,123 @@ body,
     letter-spacing: 0.5px;
 }
 
-.wrap .button-primary:hover,
-.wrap .button-primary:focus {
+.trail-map-admin .button-primary:hover,
+.trail-map-admin .button-primary:focus {
     background-color: #BD5606;
     border-color: #BD5606;
 }
 
-.wrap .wp-list-table th,
-.wrap .wp-list-table td {
+.trail-map-admin .wp-list-table th,
+.trail-map-admin .wp-list-table td {
     font-size: 15px;
 }
 
-.wrap {
+.trail-map-admin {
     background-color: #F5F5F5;
     padding: 20px;
 }
 
-.form-table th {
+.trail-map-admin .form-table th {
     color: #666666;
 }
 
-.form-table td {
+.trail-map-admin .form-table td {
     background-color: #FFFFFF;
 }
 
-.supp {
+.trail-map-admin .supp {
     color: red;
     font-size: 15px;
 }
 
-.supp:hover {
+.trail-map-admin .supp:hover {
     font-size: 16px;
 }
 
-.section-plugin {
+.trail-map-admin .section-plugin {
     padding: 20px;
 }
 
-.plugin-section-title {
+.trail-map-admin .plugin-section-title {
     font-size: 24px;
     font-weight: bold;
     color: var(--section-title-color, #000000);
 }
 
-.delete {
+.trail-map-admin .delete {
     color: #BD5606;
 }
 
-.delete:hover {
+.trail-map-admin .delete:hover {
     color: red;
 }
 
-.edit {
+.trail-map-admin .edit {
     color: #4D6544;
 }
 
-.edit:hover {
+.trail-map-admin .edit:hover {
     color: #849452;
 }
 
 /* admin-style.css */
-.back-button {
-    font-weight: 600;
+.trail-map-admin {
+    position: relative;
+}
+
+.readme-overlay {
+    display: none; 
+    position: absolute; 
+    z-index: 999; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.readme-modal {
+    display: none; 
+    position: absolute; 
+    z-index: 1000; 
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+    width: 80%;
+    height: 90%;
+    background-color: #fefefe;
+    overflow: hidden; /* Change overflow to hidden */
+}
+
+.readme-modal-content {
+    padding: 20px;
+    border: 1px solid #888;
+    width: 100%;
+    height: 100%;
+    overflow: auto; 
+    box-sizing: border-box; /* Ensure padding is included in the element's width and height */
+}
+
+.readme-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.readme-close:hover,
+.readme-close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+pre#readmeContent {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: calc(100% - 40px);
+    overflow: auto;
+    margin: 0; /* Remove margin to avoid extra space */
+    padding: 10px;
+    box-sizing: border-box; /* Ensure padding is included in the element's width and height */
 }
