@@ -48,6 +48,9 @@ body {
     border-radius: 50%;
     cursor: pointer;
 }
+.fa-map-marker {
+    font-size: 20px;
+}
 
 .leaflet-control-locate:hover {
     background-color: #00ff00;
@@ -72,9 +75,15 @@ body {
 .leaflet-control-locate.locate-icon i {
     font-size: 20px;
 }
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 36px;
+}
 
 .locate-icon-red {
     color: red !important;
+    font-size: 16px;
 }
 
 .locate-icon-green {

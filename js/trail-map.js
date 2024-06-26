@@ -33,13 +33,12 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Copy button or shortcode element not found');
     }
 
-    var sectionTitle = document.querySelector('.plugin-section-title');
+    const sectionTitle = document.querySelector('.plugin-section-title');
     if (sectionTitle) {
-        var sectionTitleColor = pluginDirUrl.sectionTitleColor;
+        const sectionTitleColor = pluginDirUrl.sectionTitleColor;
         sectionTitle.style.color = sectionTitleColor;
     }
 
-    // Vérifiez si l'élément map est présent avant de créer la carte
     const mapElement = document.getElementById('map');
     if (!mapElement) {
         console.log('Map container not found');
@@ -49,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const baseUrl = pluginDirUrl.url;
     const map = L.map('map').setView([mapSettings.latitude, mapSettings.longitude], mapSettings.zoom);
 
-    const OpenStreetMap_France = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
         maxZoom: 20,
         attribution: '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
@@ -69,8 +68,8 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(gpx => {
                 console.log("GPX Data:", gpx);
-                var parser = new DOMParser();
-                var gpxData = parser.parseFromString(gpx, 'application/xml');
+                const parser = new DOMParser();
+                const gpxData = parser.parseFromString(gpx, 'application/xml');
 
                 const startIconUrl = baseUrl + 'leaflet/images/pin-icon-start.png';
                 const endIconUrl = baseUrl + 'leaflet/images/pin-icon-end.png';
@@ -105,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 gpxLayers.push(layer);
                 layer.addTo(map);
 
-                // Add waypoint markers with numbers
                 const waypoints = gpxData.getElementsByTagName('wpt');
                 Array.from(waypoints).forEach((wpt, index) => {
                     const lat = wpt.getAttribute('lat');
@@ -166,19 +164,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const descriptionElement = document.getElementById('trail-description');
             if (descriptionElement) {
-                descriptionElement.innerHTML = `<h3>Informations de l'itinéraire</h3>
-                                                <p><strong>Distance :</strong> ${distance} km</p>
-                                                <p><strong>Difficulté :</strong> ${difficulty}</p>
-                                                <p><strong>Durée :</strong> ${duration}</p>
-                                                <h3>Description</h3>
-                                                <p>${description}</p>
-                                                <p><strong>Précautions :</strong> ${precautions}</p>`;
+                descriptionElement.innerHTML = `
+                    <h3>Informations de l'itinéraire</h3>
+                    <p><strong>Distance :</strong> ${distance} km</p>
+                    <p><strong>Difficulté :</strong> ${difficulty}</p>
+                    <p><strong>Durée :</strong> ${duration}</p>
+                    <h3>Description</h3>
+                    <p>${description}</p>
+                    <p><strong>Précautions :</strong> ${precautions}</p>
+                `;
                 descriptionElement.style.display = 'block'; // Show description for individual trails
             }
         });
     });
 
-    const showAllButton = document.querySelector('#show-all');
+    const showAllButton = document.getElementById('show-all');
     if (showAllButton) {
         showAllButton.style.backgroundColor = buttonColor;
         showAllButton.style.color = buttonTextColor;
@@ -202,59 +202,62 @@ document.addEventListener('DOMContentLoaded', function () {
                 descriptionElement.style.display = 'none'; // Hide description for "show all"
             }
         });
-    } else {
-        const showAllButtonElement = document.getElementById('show-all');
-        if (showAllButtonElement) {
-            showAllButtonElement.style.display = 'none'; // Hide the button
-        }
     }
 
-    // Masquer la section de description par défaut
     const descriptionElement = document.getElementById('trail-description');
     if (descriptionElement) {
         descriptionElement.style.display = 'none';
     }
 
-    // Bouton de géolocalisation
     let userMarker;
     let locateControlEnabled = false;
+    let watchId = null;
+
     const locateControl = L.control({ position: 'topright' });
     locateControl.onAdd = function (map) {
-        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        container.innerHTML = '<a class="leaflet-control-locate"><i class="fa fa-map-marker" aria-hidden="true" style="line-height:1.65; font-size: 20px;"></i></a>';
-        container.onclick = () => {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control locate-icon');
+        container.innerHTML = '<a href="#" title="Locate me"><i class="fa fa-map-marker" aria-hidden="true"></i></a>';
+        container.onclick = function () {
             if (locateControlEnabled) {
-                map.stopLocate();
+                if (watchId) {
+                    navigator.geolocation.clearWatch(watchId);
+                    watchId = null;
+                }
                 locateControlEnabled = false;
                 container.querySelector('i').style.color = 'red';
+                if (userMarker) {
+                    map.removeLayer(userMarker);
+                    userMarker = null;
+                }
             } else {
-                map.locate({ setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true });
+                watchId = navigator.geolocation.watchPosition(function (position) {
+                    const userIcon = L.divIcon({
+                        className: 'user-location-icon',
+                        html: '<i class="fas fa-street-view"></i>',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
+                    });
+
+                    if (!userMarker) {
+                        userMarker = L.marker([position.coords.latitude, position.coords.longitude], { icon: userIcon }).addTo(map);
+                    } else {
+                        userMarker.setLatLng([position.coords.latitude, position.coords.longitude]);
+                    }
+
+                    map.setView([position.coords.latitude, position.coords.longitude], 16);
+                }, function (error) {
+                    alert("Erreur de localisation: " + error.message);
+                }, {
+                    enableHighAccuracy: true,
+                    maximumAge: 0,
+                    timeout: 60000
+                });
                 locateControlEnabled = true;
                 container.querySelector('i').style.color = 'green';
             }
+            return false;
         };
         return container;
     };
     locateControl.addTo(map);
-
-    map.on('locationfound', function (e) {
-        const userIcon = L.divIcon({
-            className: 'user-location-icon',
-            html: '<i class="fas fa-street-view"></i>',
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
-        });
-
-        if (!userMarker) {
-            userMarker = L.marker(e.latlng, { icon: userIcon }).addTo(map);
-        } else {
-            userMarker.setLatLng(e.latlng);
-        }
-
-        map.setView(e.latlng, 16);
-    });
-
-    map.on('locationerror', function (e) {
-        alert("Erreur de localisation: " + e.message);
-    });
 });
