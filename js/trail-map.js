@@ -53,6 +53,13 @@ document.addEventListener('DOMContentLoaded', function () {
         attribution: '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+    // Ajouter le contrôle de plein écran
+    if (typeof L.control.fullscreen !== 'undefined') {
+        map.addControl(new L.control.fullscreen());
+    } else {
+        console.error('Fullscreen control is not available.');
+    }
+
     let gpxLayers = [];
     let waypointMarkers = [];
 
