@@ -46,7 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const baseUrl = pluginDirUrl.url;
-    const map = L.map('map').setView([mapSettings.latitude, mapSettings.longitude], mapSettings.zoom);
+    const map = L.map('map', {
+        center: [mapSettings.latitude, mapSettings.longitude],
+        zoom: mapSettings.zoom,
+        scrollWheelZoom: false, // Désactiver le zoom par défilement de la souris
+        doubleClickZoom: true,  // Activer le zoom par double-tap
+        touchZoom: true         // Activer le pinch-zoom sur mobile
+    });
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
         maxZoom: 20,
@@ -172,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const descriptionElement = document.getElementById('trail-description');
             if (descriptionElement) {
                 descriptionElement.innerHTML = `
-                    <h3>Informations de l'itinéraire</h3>
+                    <h3>Informations du parcours</h3>
                     <p><strong>Distance :</strong> ${distance} km</p>
                     <p><strong>Difficulté :</strong> ${difficulty}</p>
                     <p><strong>Durée :</strong> ${duration}</p>
@@ -267,4 +273,24 @@ document.addEventListener('DOMContentLoaded', function () {
         return container;
     };
     locateControl.addTo(map);
+
+    // Désactiver le mouvement de la carte lors du défilement sur les appareils mobiles, mais permettre le zoom
+    map.on('touchstart', function (e) {
+        if (e.originalEvent.touches.length === 1) {
+            map.dragging.disable();
+        } else {
+            map.dragging.enable();
+        }
+    });
+
+    map.on('touchend', function () {
+        map.dragging.enable();
+    });
+
+    // Désactiver le glissement de la carte lors du défilement sur mobile
+    map.on('touchmove', function (e) {
+        if (e.originalEvent.touches.length === 1) {
+            e.preventDefault();
+        }
+    });
 });
