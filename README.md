@@ -57,6 +57,15 @@ My Trail Map is a custom WordPress plugin designed to display GPX trail maps on 
 = 1.0 =
 * Initial release of My Trail Map plugin.
 
+
+== Uninstalling the Plugin ==
+
+To completely uninstall the My Trail Map plugin and remove all its data:
+
+1. **Deactivate the Plugin**: Go to the WordPress admin dashboard, navigate to 'Plugins', and deactivate the My Trail Map plugin.
+2. **Delete the Plugin**: After deactivation, click 'Delete' to remove the plugin from your site.
+3. **Remove Remaining Files Manually**: If the plugin folder still exists in the `wp-content/plugins` directory, use an FTP client or your hosting file manager to manually delete the `my-trail-map` folder.
+
 == License ==
 
 This plugin is licensed under the GPLv2 or later. For more information, see [License URI](https://www.gnu.org/licenses/gpl-2.0.html).
@@ -111,6 +120,14 @@ My Trail Map est un plugin WordPress personnalisé conçu pour afficher des cart
 
 = 1.0 =
 * Première version du plugin My Trail Map.
+
+== Désinstallation du Plugin ==
+
+Pour désinstaller complètement le plugin My Trail Map et supprimer toutes ses données :
+
+1. **Désactiver le Plugin** : Accédez au tableau de bord administrateur de WordPress, naviguez jusqu'à 'Extensions', et désactivez le plugin My Trail Map.
+2. **Supprimer le Plugin** : Après la désactivation, cliquez sur 'Supprimer' pour enlever le plugin de votre site.
+3. **Supprimer Manuellement les Fichiers Restants** : Si le dossier du plugin existe toujours dans le répertoire `wp-content/plugins`, utilisez un client FTP ou le gestionnaire de fichiers de votre hébergeur pour supprimer manuellement le dossier `my-trail-map`.
 
 == Licence ==
 

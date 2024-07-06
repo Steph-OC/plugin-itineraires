@@ -35,3 +35,11 @@ function my_trail_map_init()
     }
 }
 add_action('plugins_loaded', 'my_trail_map_init');
+
+// Enregistrer le hook de désinstallation
+register_uninstall_hook(__FILE__, 'my_trail_map_uninstall');
+
+function my_trail_map_uninstall() {
+    // Appeler le fichier uninstall.php pour effectuer le nettoyage
+    include plugin_dir_path(__FILE__) . 'uninstall.php';
+}

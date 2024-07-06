@@ -30,8 +30,8 @@ if (!class_exists('My_Trail_Map_Admin')) {
 
             add_submenu_page(
                 null,
-                'Modifier l\'itinéraire GPX',
-                'Modifier l\'itinéraire GPX',
+                'Modifier le parcours GPX',
+                'Modifier le parcours GPX',
                 'manage_options',
                 'trail-map-edit',
                 array($this, 'create_edit_page')
@@ -45,7 +45,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
                 $message = '';
                 switch ($_GET['message']) {
                     case 'updated':
-                        $message = 'Itinéraire mis à jour avec succès.';
+                        $message = 'Parcours mis à jour avec succès.';
                         break;
                     case 'deleted':
                         $message = 'Fichier GPX supprimé avec succès.';
@@ -77,20 +77,20 @@ if (!class_exists('My_Trail_Map_Admin')) {
                 'longitude' => '3.16982',
                 'zoom' => '13'
             ));
-            $section_title = get_option('trail_map_section_title', 'Trail Map - Gestion des itinéraires');
+            $section_title = get_option('trail_map_section_title', 'Trail Map - Gestion des parcours');
             $section_title_color = get_option('trail_map_section_title_color', '#000000');
             $button_color = get_option('trail_map_button_color', '#0073aa'); // Default WordPress button color
             $button_text_color = get_option('trail_map_button_text_color', '#ffffff');
             $button_hover_color = get_option('trail_map_button_hover_color', '#005177');
             $button_focus_color = get_option('trail_map_button_focus_color', '#005177');
-            $show_all_button = get_option('trail_map_show_all_button', 1); // Récupère l'option pour le bouton "Tous les itinéraires"
+            $show_all_button = get_option('trail_map_show_all_button', 1); // Récupère l'option pour le bouton "Tous les parcours"
 ?>
             <div class="wrap trail-map-admin">
-                <h1 class="plugin-title">Trail Map - Gestion des itinéraires</h1>
+                <h1 class="plugin-title">Trail Map - Gestion des parcours</h1>
 
                 <div class="section-plugin">
                     <h2 class="plugin-h2">Shortcode</h2>
-                    <p>Utilisez le shortcode suivant pour afficher la carte des itinéraires sur vos pages ou articles :</p>
+                    <p>Utilisez le shortcode suivant pour afficher la carte des parcours sur vos pages ou articles :</p>
                     <code id="trail-map-shortcode">[trail_map]</code> <button id="copy-shortcode" class="button-copy">Copier le shortcode</button>
                 </div>
 
@@ -130,7 +130,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
                 </div>
 
                 <div class="section-plugin">
-                    <h2 class="plugin-h2">Nouvel itinéraire</h2>
+                    <h2 class="plugin-h2">Nouveau parcours</h2>
                     <form method="post" action="<?php echo admin_url('admin-post.php?action=upload_gpx'); ?>" enctype="multipart/form-data">
                         <?php wp_nonce_field('upload_gpx', 'upload_gpx_nonce'); ?>
                         <table class="form-table">
@@ -142,10 +142,10 @@ if (!class_exists('My_Trail_Map_Admin')) {
                                 </td>
                             </tr>
                             <tr valign="top">
-                                <th scope="row">Titre de l'itinéraire</th>
+                                <th scope="row">Titre du parcours</th>
                                 <td>
                                     <input type="text" name="trail_map_gpx_title" />
-                                    <small class="form-text">Ce titre servira de libellé du bouton itinéraire.</small>
+                                    <small class="form-text">Ce titre sera utilisé pour le bouton de parcours. En l'absence de titre, les boutons seront nommés Parcours 1, Parcours 2, etc.</small>
                                 </td>
                             </tr>
                             <tr valign="top">
@@ -170,15 +170,15 @@ if (!class_exists('My_Trail_Map_Admin')) {
                                 <td><input type="text" name="trail_map_gpx_duration" /></td>
                             </tr>
                             <tr valign="top">
-                                <th scope="row">Description de l'itinéraire</th>
+                                <th scope="row">Description du parcours</th>
                                 <td><textarea name="trail_map_gpx_description" rows="4" cols="50"></textarea></td>
                             </tr>
                             <tr valign="top">
-                                <th scope="row">Précautions à prendre lors de cet itinéraire</th>
+                                <th scope="row">Précautions à prendre lors de ce parcours</th>
                                 <td><textarea name="trail_map_gpx_precautions" rows="4" cols="50"></textarea></td>
                             </tr>
                         </table>
-                        <?php submit_button('Enregistrer cette itinéraire'); ?>
+                        <?php submit_button('Enregistrer ce parcours'); ?>
                     </form>
                 </div>
 
@@ -202,38 +202,38 @@ if (!class_exists('My_Trail_Map_Admin')) {
                                 </td>
                             </tr>
                             <tr valign="top">
-                                <th scope="row">Afficher le bouton "Tous les itinéraires"</th>
+                                <th scope="row">Afficher le bouton "Tous les parcours"</th>
                                 <td>
                                     <input type="checkbox" name="trail_map_show_all_button" <?php checked($show_all_button, 1); ?> />
-                                    <small class="form-text">Cochez cette case pour afficher le bouton "Tous les itinéraires".</small>
+                                    <small class="form-text">Cochez cette case pour afficher le bouton "Tous les parcours".</small>
                                 </td>
                             </tr>
                             <tr valign="top">
-                                <th scope="row">Couleur des boutons des itinéraires</th>
+                                <th scope="row">Couleur des boutons des parcours</th>
                                 <td>
                                     <input type="color" name="trail_map_button_color" value="<?php echo esc_attr($button_color); ?>" />
-                                    <small class="form-text">Choisissez la couleur des boutons des itinéraires.</small>
+                                    <small class="form-text">Choisissez la couleur des boutons des parcours.</small>
                                 </td>
                             </tr>
                             <tr valign="top">
                                 <th scope="row">Couleur du texte des boutons</th>
                                 <td>
                                     <input type="color" name="trail_map_button_text_color" value="<?php echo esc_attr($button_text_color); ?>" />
-                                    <small class="form-text">Choisissez la couleur du texte des boutons des itinéraires.</small>
+                                    <small class="form-text">Choisissez la couleur du texte des boutons des parcours.</small>
                                 </td>
                             </tr>
                             <tr valign="top">
                                 <th scope="row">Couleur de hover des boutons</th>
                                 <td>
                                     <input type="color" name="trail_map_button_hover_color" value="<?php echo esc_attr($button_hover_color); ?>" />
-                                    <small class="form-text">Choisissez la couleur des boutons des itinéraires lorsque vous passer la souris dessus.</small>
+                                    <small class="form-text">Choisissez la couleur des boutons des parcours lorsque vous passer la souris dessus.</small>
                                 </td>
                             </tr>
                             <tr valign="top">
                                 <th scope="row">Couleur de focus des boutons</th>
                                 <td>
                                     <input type="color" name="trail_map_button_focus_color" value="<?php echo esc_attr($button_focus_color); ?>" />
-                                    <small class="form-text">Choisissez la couleur des boutons des itinéraires lorsqu'ils sont activés.</small>
+                                    <small class="form-text">Choisissez la couleur des boutons des parcours lorsqu'ils sont activés.</small>
                                 </td>
                             </tr>
                         </table>
@@ -308,18 +308,18 @@ if (!class_exists('My_Trail_Map_Admin')) {
             $file = $gpx_files[$index];
         ?>
             <div class="wrap trail-map-admin">
-                <h1 class="plugin-title">Modifier l'itinéraire GPX</h1>
-                <a href="<?php echo admin_url('admin.php?page=trail-map'); ?>" class="button back-button">Retour à la gestion des itinéraires</a>
+                <h1 class="plugin-title">Modifier le parcours GPX</h1>
+                <a href="<?php echo admin_url('admin.php?page=trail-map'); ?>" class="button back-button">Retour à la gestion des parcours</a>
                 <form method="post" action="<?php echo admin_url('admin-post.php?action=edit_gpx_file'); ?>">
                     <?php wp_nonce_field('edit_gpx_file', 'edit_gpx_file_nonce'); ?>
                     <input type="hidden" name="trail_map_gpx_index" value="<?php echo esc_attr($index); ?>" />
                     <table class="form-table">
                         <tr valign="top">
-                            <th scope="row">Titre de l'itinéraire</th>
+                            <th scope="row">Titre du parcours</th>
                             <td><input type="text" name="trail_map_gpx_title" value="<?php echo esc_attr($file['title']); ?>" /></td>
                         </tr>
                         <tr valign="top">
-                            <th scope="row">Description de l'itinéraire</th>
+                            <th scope="row">Description du parcours</th>
                             <td><textarea name="trail_map_gpx_description" rows="4" cols="50"><?php echo esc_textarea($file['description']); ?></textarea></td>
                         </tr>
                         <tr valign="top">
@@ -344,7 +344,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
                             <td><input type="text" name="trail_map_gpx_duration" value="<?php echo esc_attr($file['duration']); ?>" /></td>
                         </tr>
                         <tr valign="top">
-                            <th scope="row">Précautions à prendre lors de cet itinéraire</th>
+                            <th scope="row">Précautions à prendre lors de ce parcours</th>
                             <td><textarea name="trail_map_gpx_precautions" rows="4" cols="50"><?php echo esc_textarea($file['precautions']); ?></textarea></td>
                         </tr>
                     </table>
@@ -413,7 +413,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
                             'difficulty' => $uploaded_difficulty,
                             'duration' => $uploaded_duration,
                             'precautions' => $uploaded_precautions,
-                            'visible' => true // par défaut, l'itinéraire est visible
+                            'visible' => true // par défaut, le parcours est visible
                         );
                         update_option('trail_map_gpx_files', $gpx_files);
                     } else {
@@ -528,7 +528,7 @@ if (!class_exists('My_Trail_Map_Admin')) {
 
         public function enqueue_admin_styles()
         {
-            wp_enqueue_style('my-plugin-admin-css', plugin_dir_url(__FILE__) . '../assets/css/admin-style.css');
+            wp_enqueue_style('my-plugin-admin-css', plugin_dir_url(__FILE__) . '../dist/css/admin-style.min.css');
             wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap', false);
         }
 
@@ -536,8 +536,8 @@ if (!class_exists('My_Trail_Map_Admin')) {
         {
             $screen = get_current_screen();
             if ($screen->id === 'toplevel_page_trail-map') {
-                wp_enqueue_script('my-plugin-admin-js', plugin_dir_url(__FILE__) . '../js/trail-map.js', array('jquery'), null, true);
-                wp_enqueue_script('my-plugin-admin-admin-js', plugin_dir_url(__FILE__) . '../js/admin-trail-map.js', array('jquery'), null, true);
+                wp_enqueue_script('my-plugin-admin-js', plugin_dir_url(__FILE__) . '../dist/js/trail-map.min.js', array('jquery'), null, true);
+                wp_enqueue_script('my-plugin-admin-admin-js', plugin_dir_url(__FILE__) . '../dist/js/admin-trail-map.min.js', array('jquery'), null, true);
                 wp_localize_script('my-plugin-admin-js', 'pluginDirUrl', array(
                     'buttonColor' => get_option('trail_map_button_color', '#0073aa'),
                     'buttonTextColor' => get_option('trail_map_button_text_color', '#ffffff'),

@@ -37,11 +37,11 @@ if (!class_exists('My_Trail_Map')) {
 
             // Enqueue Trail Map JS only if the shortcode is present on the page
             if (is_page() && has_shortcode(get_post()->post_content, 'trail_map')) {
-                wp_enqueue_script('trail-map', plugin_dir_url(__FILE__) . '../js/trail-map.js', array('leaflet-js', 'leaflet-gpx-js', 'leaflet-fullscreen-js'), null, true);
+                wp_enqueue_script('trail-map', plugin_dir_url(__FILE__) . '../dist/js/trail-map.min.js', array('leaflet-js', 'leaflet-gpx-js', 'leaflet-fullscreen-js'), null, true);
             }
 
             // Enqueue front-end CSS
-            wp_enqueue_style('my-plugin-css', plugin_dir_url(__FILE__) . '../assets/css/style.css');
+            wp_enqueue_style('my-plugin-css', plugin_dir_url(__FILE__) . '../dist/css/style.min.css');
 
             // Localize script to pass the plugin directory URL and map settings
             $map_settings = get_option('trail_map_settings', array(
@@ -86,7 +86,7 @@ if (!class_exists('My_Trail_Map')) {
             $upload_dir = wp_upload_dir();
             $gpx_file_urls = array_map(function ($file) use ($upload_dir) {
                 return [
-                    'name' => isset($file['title']) ? $file['title'] : '',
+                    'title' => isset($file['title']) && !empty($file['title']) ? $file['title'] : 'Parcours',
                     'url' => $upload_dir['baseurl'] . '/gpx/' . (isset($file['name']) ? $file['name'] : ''),
                     'description' => isset($file['description']) ? $file['description'] : '',
                     'distance' => isset($file['distance']) ? $file['distance'] : '',
@@ -99,22 +99,33 @@ if (!class_exists('My_Trail_Map')) {
             $gpx_file_urls = array_filter($gpx_file_urls);
 
             ob_start();
-            ?>
+?>
             <h2 class="plugin-section-title" style="color: <?php echo esc_attr($section_title_color); ?>;"><?php echo esc_html($section_title); ?></h2>
-            <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p>
             <div id="trail-map-controls">
                 <?php if ($show_all_button) : ?>
-                    <button id="show-all">Tous les itinéraires</button>
-                <?php endif; ?>
-
-
-                <?php foreach ($gpx_file_urls as $file) : ?>
-                    <button class="show-trail" data-url="<?php echo esc_url($file['url']); ?>" data-description="<?php echo esc_html($file['description']); ?>" data-distance="<?php echo esc_html($file['distance']); ?>" data-difficulty="<?php echo esc_html($file['difficulty']); ?>" data-duration="<?php echo esc_html($file['duration']); ?>" data-precautions="<?php echo esc_html($file['precautions']); ?>"><?php echo esc_html($file['name']); ?></button>
-                <?php endforeach; ?>
+                    <button id="show-all">Tous les parcours</button>
+                <?php endif;
+                $counter = 1;
+                foreach ($gpx_file_urls as $file) :
+                    if (empty($file['title']) || $file['title'] === 'Parcours') {
+                        $file['title'] = 'Parcours ' . $counter;
+                        $counter++;
+                    }
+                    $button_label = esc_html($file['title']);
+                    // Debugging: Log the title and counter to see if they are being set correctly
+                    error_log("Title: " . $file['title'] . " | Counter: " . $counter . " | Button label: " . $button_label);
+                ?>
+                    <button class="show-trail" data-url="<?php echo esc_url($file['url']); ?>" data-description="<?php echo esc_html($file['description']); ?>" data-distance="<?php echo esc_html($file['distance']); ?>" data-difficulty="<?php echo esc_html($file['difficulty']); ?>" data-duration="<?php echo esc_html($file['duration']); ?>" data-precautions="<?php echo esc_html($file['precautions']); ?>">
+                        <?php echo $button_label; ?>
+                    </button>
+                <?php
+                endforeach;
+                ?>
             </div>
+            <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p>
             <div id="map" style="height: 600px;"></div>
             <div id="trail-description" class="trail-description">
-                <h3>Description de l'itinéraire</h3>
+                <h3>Description du parcours</h3>
                 <p id="description"></p>
                 <p id="distance"></p>
                 <p id="difficulty"></p>
@@ -125,13 +136,13 @@ if (!class_exists('My_Trail_Map')) {
                 var gpxFiles = <?php echo json_encode($gpx_file_urls); ?>;
                 var pluginDirUrl = "<?php echo trailingslashit(plugin_dir_url(__FILE__) . '../'); ?>";
                 var mapSettings = <?php echo json_encode(get_option('trail_map_settings', array(
-                    'latitude' => '43.2743',
-                    'longitude' => '3.16982',
-                    'zoom' => '13'
-                ))); ?>;
+                                        'latitude' => '43.2743',
+                                        'longitude' => '3.16982',
+                                        'zoom' => '13'
+                                    ))); ?>;
                 console.log("pluginDirUrl in PHP:", pluginDirUrl);
             </script>
-            <?php
+<?php
             return ob_get_clean();
         }
     }
