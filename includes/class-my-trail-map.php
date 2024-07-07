@@ -124,7 +124,7 @@ if (!class_exists('My_Trail_Map')) {
             </div>
             <p class="geoloc-explanation">Cliquez sur l'icône de géolocalisation pour trouver votre position sur la carte. L'icône devient verte lorsque la géolocalisation est active.</p>
             <div id="map" style="height: 600px;"></div>
-            <div id="trail-description" class="trail-description">
+            <div id="trail-description" class="trail-description" style="display: none;">
                 <h3>Description du parcours</h3>
                 <p id="description"></p>
                 <p id="distance"></p>
